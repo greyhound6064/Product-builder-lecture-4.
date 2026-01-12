@@ -2,123 +2,147 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>로또 & 힐링 추첨기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위로와 모욕</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #fdfbfb; padding: 40px; }
-        .container { background: white; display: inline-block; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 500px; width: 100%; }
-        
-        /* 위로 문구 스타일 */
-        #message-area { 
-            min-height: 60px; margin-bottom: 20px; padding: 15px;
-            background-color: #fff9db; border-radius: 10px;
-            color: #856404; font-weight: bold; font-size: 1.1em;
-            display: flex; align-items: center; justify-content: center;
-            line-height: 1.4; border: 1px solid #ffeeba;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        .lotto-row { display: flex; align-items: center; justify-content: center; padding: 10px 0; border-bottom: 1px solid #f1f1f1; }
-        .row-label { font-weight: bold; margin-right: 15px; color: #aaa; width: 20px; font-size: 0.9em; }
-
-        .ball {
-            display: inline-block; width: 38px; height: 38px; line-height: 38px;
-            font-size: 15px; font-weight: bold; color: white; border-radius: 50%;
-            margin: 0 3px;
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
         }
-        .plus { font-weight: bold; margin: 0 8px; color: #ccc; }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
 
         button {
-            margin-top: 30px; padding: 15px 40px; font-size: 18px; font-weight: bold;
-            cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 50px; transition: 0.3s;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3); }
+
+        button.comfort {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button.comfort:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        button.insult {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button.insult:hover {
+            background-color: #da190b;
+            transform: translateY(-2px);
+        }
+
+        #messageDisplay {
+            min-height: 100px;
+            width: 80%;
+            max-width: 600px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.5s ease;
+        }
+
+        #messageDisplay.comfort-message {
+            color: #28a745; /* Green for comfort */
+        }
+
+        #messageDisplay.insult-message {
+            color: #dc3545; /* Red for insult */
+        }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <div id="message-area">오늘도 고생 많았어요. 당신의 행운을 빌게요! ✨</div>
-        
-        <div id="lotto-board">
-            </div>
-
-        <button onclick="playAndDraw()">행운 추첨하기</button>
+    <h1>마음 다스리기</h1>
+    <div class="button-container">
+        <button id="comfortButton" class="comfort">위로받기</button>
+        <button id="insultButton" class="insult">모욕 받기</button>
     </div>
+    <div id="messageDisplay">버튼을 눌러보세요!</div>
 
     <script>
-        // 1. 위로의 문구 배열 (원하는 문구를 추가해보세요!)
-        const messages = [
-            "당신의 노력이 헛되지 않음을 믿어요. 꼭 보답받을 거예요.",
-            "로또 1등보다 더 소중한 당신, 오늘 하루도 수고했어요.",
-            "행운은 예상치 못한 순간에 찾아온답니다. 조금만 기다려봐요.",
-            "지금 충분히 잘하고 있어요. 스스로를 조금 더 믿어줘요.",
-            "오늘의 결과가 어떻든, 당신의 내일은 오늘보다 밝을 거예요.",
-            "가장 큰 행운은 당신이 무사히 오늘을 보낸 것이 아닐까요?",
-            "꽃이 피는 시기는 저마다 달라요. 당신의 계절은 곧 올 거예요.",
-            "잠시 쉬어가도 괜찮아요. 숨을 크게 들이마셔 보세요."
+        const comfortMessages = [
+            "힘들었죠? 혼자 감당하지 않아도 괜찮아요.",
+            "당신은 충분히 잘하고 있어요. 스스로를 믿어주세요.",
+            "잠시 쉬어가도 괜찮아요. 모든 것은 지나갈 거예요.",
+            "당신은 소중하고 사랑받을 자격이 충분합니다.",
+            "지금 이 순간에도 당신은 빛나고 있어요.",
+            "어떤 선택을 하든 당신의 결정을 응원합니다.",
+            "넘어져도 괜찮아요. 다시 일어설 힘이 당신에게는 있어요.",
+            "당신의 진심은 언제나 통할 거예요.",
+            "오늘 하루도 정말 수고 많으셨습니다.",
+            "당신은 생각보다 훨씬 더 강한 사람이에요."
         ];
 
-        const sound = new Audio('https://t1.daumcdn.net/tistory_admin/static/manage/playlist_add_v1.mp3');
+        const insultMessages = [
+            "네 재능은 숨기는데 탁월하구나.",
+            "생각하는 게 그렇게 힘들면 안 해도 돼.",
+            "넌 평범함의 극치를 달리는구나.",
+            "그 정도 노력으로 뭘 바라니?",
+            "네 존재 자체가 민폐다.",
+            "그 얼굴로 거울 볼 맛 나겠네.",
+            "머리는 장식으로 달고 다니니?",
+            "네가 하는 모든 말은 쓸데없다.",
+            "딱히 할 말은 없지만, 할 말이 없게 만드는 재주가 있네.",
+            "왜 사는지 모르겠다."
+        ];
 
-        function playAndDraw() {
-            // 소리 재생
-            sound.currentTime = 0;
-            sound.play().catch(e => {});
+        const comfortButton = document.getElementById('comfortButton');
+        const insultButton = document.getElementById('insultButton');
+        const messageDisplay = document.getElementById('messageDisplay');
 
-            // 2. 랜덤 문구 표시
-            const randomIdx = Math.floor(Math.random() * messages.length);
-            document.getElementById('message-area').innerText = messages[randomIdx];
-
-            // 3. 로또 5줄 생성
-            drawFiveLines();
+        function getRandomMessage(messages) {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            return messages[randomIndex];
         }
 
-        function drawFiveLines() {
-            const board = document.getElementById('lotto-board');
-            board.innerHTML = '';
-            const labels = ['A', 'B', 'C', 'D', 'E'];
+        comfortButton.addEventListener('click', () => {
+            messageDisplay.textContent = getRandomMessage(comfortMessages);
+            messageDisplay.classList.remove('insult-message');
+            messageDisplay.classList.add('comfort-message');
+        });
 
-            for (let i = 0; i < 5; i++) {
-                let numbers = [];
-                while (numbers.length < 7) {
-                    let num = Math.floor(Math.random() * 45) + 1;
-                    if (!numbers.includes(num)) numbers.push(num);
-                }
-                let bonus = numbers.pop();
-                numbers.sort((a, b) => a - b);
-
-                const row = document.createElement('div');
-                row.className = 'lotto-row';
-                
-                const label = document.createElement('span');
-                label.className = 'row-label';
-                label.innerText = labels[i];
-                row.appendChild(label);
-
-                numbers.forEach(num => row.appendChild(createBall(num)));
-                
-                const plus = document.createElement('span');
-                plus.className = 'plus';
-                plus.innerText = '+';
-                row.appendChild(plus);
-
-                row.appendChild(createBall(bonus, true));
-                board.appendChild(row);
-            }
-        }
-
-        function createBall(num, isBonus = false) {
-            const ball = document.createElement('span');
-            ball.className = 'ball';
-            ball.innerText = num;
-            if (num <= 10) ball.style.backgroundColor = '#f1c40f';
-            else if (num <= 20) ball.style.backgroundColor = '#3498db';
-            else if (num <= 30) ball.style.backgroundColor = '#e74c3c';
-            else if (num <= 40) ball.style.backgroundColor = '#95a5a6';
-            else ball.style.backgroundColor = '#2ecc71';
-            if (isBonus) ball.style.boxShadow = "0 0 0 3px #333 inset";
-            return ball;
-        }
+        insultButton.addEventListener('click', () => {
+            messageDisplay.textContent = getRandomMessage(insultMessages);
+            messageDisplay.classList.remove('comfort-message');
+            messageDisplay.classList.add('insult-message');
+        });
     </script>
 </body>
 </html>
