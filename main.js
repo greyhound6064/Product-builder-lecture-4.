@@ -95,7 +95,82 @@ const loadingOverlay = document.getElementById('loadingOverlay'); // Add this
 // ---------------------------------------------------------
 // Game Logic Functions
 // ---------------------------------------------------------
-// ... (existing code) ...
+function getRandomMessage(messages) {
+    return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function showFloatingText(text, type) {
+    const floatingText = document.createElement('span');
+    floatingText.textContent = text;
+    floatingText.className = `floating-text ${type}`;
+    lifeContainer.appendChild(floatingText);
+
+    setTimeout(() => {
+        floatingText.remove();
+    }, 1000); // Remove after animation ends (1s)
+}
+
+function updateGameStatus() {
+    lifeValueSpan.textContent = life;
+    messageDisplay.className = ''; // Reset classes
+    messageDisplay.id = 'messageDisplay'; // Ensure ID is set
+
+    // 게임 승리 조건: LIFE가 20점 초과하면 성공!
+    if (life > 20) {
+        messageDisplay.textContent = "축하합니다! 많은 모욕을 견뎌내며 당신은 더욱 단단해졌습니다.";
+        messageDisplay.classList.add('win-message');
+        endGame();
+    }
+    // 게임 패배 조건: LIFE가 0점 이하가 되면 사망!
+    else if (life <= 0) {
+        messageDisplay.textContent = "당신은 나약해 빠졌습니다. 모욕받기로 스스로를 더 단련하십시오.";
+        messageDisplay.classList.add('lose-message');
+        endGame();
+    }
+}
+
+function startGame() {
+    life = 10;
+    gameActive = true;
+    lifeDisplay.style.display = 'block';
+    startGameButton.style.display = 'none';
+    comfortButton.disabled = false;
+    insultButton.disabled = false;
+    messageDisplay.textContent = "시작! 위로받거나 모욕받으세요.";
+    messageDisplay.className = '';
+    updateGameStatus();
+}
+
+function endGame() {
+    gameActive = false;
+    comfortButton.disabled = true;
+    insultButton.disabled = true;
+    startGameButton.textContent = "다시 시작";
+    startGameButton.style.display = 'block';
+}
+
+// Event Listeners for Game
+if (startGameButton) startGameButton.addEventListener('click', startGame);
+
+if (comfortButton) comfortButton.addEventListener('click', () => {
+    if (gameActive) {
+        life--;
+        showFloatingText('-1', 'minus');
+        messageDisplay.textContent = getRandomMessage(comfortMessages);
+        messageDisplay.className = 'comfort-message';
+        updateGameStatus();
+    }
+});
+
+if (insultButton) insultButton.addEventListener('click', () => {
+    if (gameActive) {
+        life++;
+        showFloatingText('+1', 'plus');
+        messageDisplay.textContent = getRandomMessage(insultMessages);
+        messageDisplay.className = 'insult-message';
+        updateGameStatus();
+    }
+});
 
 // ---------------------------------------------------------
 // Authentication Logic
