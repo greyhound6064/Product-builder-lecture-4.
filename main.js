@@ -182,7 +182,8 @@ async function handleLogin() {
         await signInWithPopup(auth, provider);
     } catch (error) {
         console.error("Login failed:", error);
-        alert("로그인에 실패했습니다.");
+        // 상세 에러 내용을 사용자에게 알림
+        alert(`로그인 실패\n에러 코드: ${error.code}\n메시지: ${error.message}`);
     }
 }
 
