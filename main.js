@@ -20,7 +20,8 @@ import {
     doc, 
     query, 
     orderBy, 
-    serverTimestamp 
+    serverTimestamp,
+    limit
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // TODO: 아래 설정을 본인의 Firebase 프로젝트 설정으로 교체하세요.
@@ -239,7 +240,7 @@ const commentList = document.getElementById('commentList');
 let currentCommentsData = []; // Store for re-rendering on auth change
 
 // Listen for real-time updates
-const q = query(collection(db, COMMENTS_COLLECTION), orderBy('createdAt', 'desc'));
+const q = query(collection(db, COMMENTS_COLLECTION), orderBy('createdAt', 'desc'), limit(50));
 const unsubscribe = onSnapshot(q, (snapshot) => {
     // Convert snapshot to array of objects
     currentCommentsData = snapshot.docs.map(doc => ({
