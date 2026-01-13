@@ -200,37 +200,28 @@ onAuthStateChanged(auth, (user) => {
     currentUser = user;
     if (user) {
         // User is signed in
-        loginButton.style.display = 'none';
-        userProfile.style.display = 'flex';
-        userName.textContent = user.displayName;
-        userPhoto.src = user.photoURL || 'https://via.placeholder.com/32'; // Fallback
+        if (loginButton) loginButton.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'flex';
+        if (userName) userName.textContent = user.displayName;
+        if (userPhoto) userPhoto.src = user.photoURL || 'https://via.placeholder.com/32';
         
         // Show comment form
         if (commentForm) commentForm.style.display = 'flex';
         if (loginRequestMsg) loginRequestMsg.style.display = 'none';
     } else {
         // User is signed out
-        loginButton.style.display = 'block';
-        userProfile.style.display = 'none';
-        userName.textContent = '';
-        userPhoto.src = '';
+        if (loginButton) loginButton.style.display = 'block';
+        if (userProfile) userProfile.style.display = 'none';
+        if (userName) userName.textContent = '';
+        if (userPhoto) userPhoto.src = '';
         
         // Hide comment form
         if (commentForm) commentForm.style.display = 'none';
         if (loginRequestMsg) loginRequestMsg.style.display = 'block';
     }
     
-    // Re-render comments to update delete button visibility based on new auth state
-    // We trigger a re-fetch or just wait for the next snapshot update. 
-    // Since snapshot listener is active, we can just clear list and let it re-populate or trigger a manual re-render if we had the data stored.
-    // For simplicity with real-time listeners, we might need to store the last received comments to re-render them immediately with new permissions,
-    // but the snapshot listener doesn't automatically fire on auth change unless data changes.
-    // Let's just rely on the user seeing the correct buttons when new data arrives or they refresh, 
-    // BUT better UX is to re-render immediately. We'll add a simple reload of comments if needed,
-    // but actually, we don't have the 'comments' array in global scope easily without modifying the structure.
-    // So for this simple app, we will let the next snapshot update handle it OR the user can refresh.
-    // Ideally, we'd separate 'data fetching' from 'rendering' more cleanly.
-    // Let's modify the onSnapshot to store data globally so we can re-render here.
+    // Re-render comments with new auth state (stored data)
+    renderComments(currentCommentsData);
 });
 
 if (loginButton) loginButton.addEventListener('click', handleLogin);
@@ -254,11 +245,6 @@ const unsubscribe = onSnapshot(q, (snapshot) => {
         id: doc.id,
         ...doc.data()
     }));
-    renderComments(currentCommentsData);
-});
-
-// Re-render on auth state change (using the stored data)
-onAuthStateChanged(auth, (user) => {
     renderComments(currentCommentsData);
 });
 
