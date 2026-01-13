@@ -1,5 +1,42 @@
 // 당근과 채찍 게임 Logic
 
+// ---------------------------------------------------------
+// Firebase Imports & Configuration
+// ---------------------------------------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    onSnapshot, 
+    deleteDoc, 
+    doc, 
+    query, 
+    orderBy, 
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// TODO: 아래 설정을 본인의 Firebase 프로젝트 설정으로 교체하세요.
+// Firebase 콘솔 -> 프로젝트 설정 -> 일반 -> 내 앱 -> SDK 설정 및 구성
+const firebaseConfig = {
+  apiKey: "AIzaSyBSWPyayT7YAJ6HqoZGsNpvYgjkkYNj2r0",
+  authDomain: "product-builder-test-1feab.firebaseapp.com",
+  projectId: "product-builder-test-1feab",
+  storageBucket: "product-builder-test-1feab.firebasestorage.app",
+  messagingSenderId: "912765779748",
+  appId: "1:912765779748:web:09f882bd363e6451ad3db1",
+  measurementId: "G-X6ZRK5D8VF"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COMMENTS_COLLECTION = "comments";
+
+
+// ---------------------------------------------------------
+// Game Data & Variables
+// ---------------------------------------------------------
 const comfortMessages = [
     "힘들었죠? 혼자 감당하지 않아도 괜찮아요.", "당신은 충분히 잘하고 있어요. 스스로를 믿어주세요.", "잠시 쉬어가도 괜찮아요. 모든 것은 지나갈 거예요.",
     "당신은 소중하고 사랑받을 자격이 충분합니다.", "지금 이 순간에도 당신은 빛나고 있어요.", "어떤 선택을 하든 당신의 결정을 응원합니다.",
@@ -33,7 +70,10 @@ const lifeContainer = document.getElementById('lifeContainer');
 const lifeDisplay = document.getElementById('lifeDisplay');
 const lifeValueSpan = document.getElementById('lifeValue');
 
-// Game Functions
+
+// ---------------------------------------------------------
+// Game Logic Functions
+// ---------------------------------------------------------
 function getRandomMessage(messages) {
     return messages[Math.floor(Math.random() * messages.length)];
 }
@@ -113,7 +153,7 @@ if (insultButton) insultButton.addEventListener('click', () => {
 
 
 // ---------------------------------------------------------
-// Comment System Logic (LocalStorage)
+// Comment System Logic (Firebase Firestore)
 // ---------------------------------------------------------
 
 const commentForm = document.getElementById('commentForm');
@@ -121,40 +161,37 @@ const commentInput = document.getElementById('commentInput');
 const authorInput = document.getElementById('authorInput');
 const passwordInput = document.getElementById('passwordInput');
 const commentList = document.getElementById('commentList');
-const STORAGE_KEY = 'carrot_stick_comments';
 
-// Load comments on startup
-document.addEventListener('DOMContentLoaded', () => {
-    loadComments();
-    
-    // Check initial game state
-    if (!gameActive) {
-        if(lifeDisplay) lifeDisplay.style.display = 'none';
-        if(comfortButton) comfortButton.disabled = true;
-        if(insultButton) insultButton.disabled = true;
-    }
+// Listen for real-time updates
+const q = query(collection(db, COMMENTS_COLLECTION), orderBy('createdAt', 'desc'));
+const unsubscribe = onSnapshot(q, (snapshot) => {
+    // Convert snapshot to array of objects
+    const comments = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+    renderComments(comments);
 });
 
-function loadComments() {
-    const comments = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    renderComments(comments);
+// Save Comment to Firestore
+async function saveComment(author, text, password) {
+    try {
+        await addDoc(collection(db, COMMENTS_COLLECTION), {
+            author: author || '익명',
+            text: text,
+            password: password,
+            createdAt: serverTimestamp(),
+            // Store a formatted date string for easy display, 
+            // though client-side formatting of timestamp is often better.
+            date: new Date().toLocaleString() 
+        });
+    } catch (e) {
+        console.error("Error adding document: ", e);
+        alert("댓글 저장에 실패했습니다.");
+    }
 }
 
-function saveComment(author, text, password) {
-    const comments = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    const newComment = {
-        id: Date.now(),
-        author: author || '익명', // Anonymous if empty
-        text: text,
-        password: password,
-        date: new Date().toLocaleString()
-    };
-    
-    comments.unshift(newComment); // Add to top
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
-    renderComments(comments);
-}
-
+// Render Comments
 function renderComments(comments) {
     if (!commentList) return;
     commentList.innerHTML = '';
@@ -182,16 +219,17 @@ function renderComments(comments) {
         
         const dateSpan = document.createElement('span');
         dateSpan.className = 'comment-date';
-        dateSpan.textContent = comment.date;
+        // Handle case where serverTimestamp hasn't synced back yet
+        dateSpan.textContent = comment.date || new Date().toLocaleString();
         
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-comment-btn';
         deleteBtn.textContent = '삭제';
         deleteBtn.ariaLabel = '삭제';
         
-        // Direct event listener attachment
+        // Attach delete event
         deleteBtn.addEventListener('click', () => {
-            deleteComment(comment.id);
+            handleDeleteRequest(comment.id, comment.password);
         });
 
         metaDiv.appendChild(dateSpan);
@@ -211,49 +249,42 @@ function renderComments(comments) {
     });
 }
 
-function deleteComment(id) {
-    let comments = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    const targetComment = comments.find(c => c.id === id);
-    
-    if (!targetComment) {
-        alert('이미 삭제되었거나 존재하지 않는 댓글입니다.');
-        renderComments(comments); 
-        return;
-    }
-
-    if (targetComment.password) {
-        // Use a slight delay to ensure the UI is responsive before blocking with prompt
-        setTimeout(() => {
+// Handle Delete Request (Password Check)
+async function handleDeleteRequest(id, correctPassword) {
+    if (correctPassword) {
+        // UI trick: slight delay to ensure prompt shows cleanly
+        setTimeout(async () => {
             const inputPw = prompt('비밀번호를 입력하세요:');
             if (inputPw === null) return; 
             
-            if (inputPw !== targetComment.password) {
+            if (inputPw !== correctPassword) {
                 alert('비밀번호가 일치하지 않습니다.');
                 return;
             }
-            performDelete(id);
+            await deleteCommentFromFirestore(id);
         }, 10);
     } else {
+        // Legacy or no-password comments
          if (confirm('정말 삭제하시겠습니까?')) {
-             performDelete(id);
+             await deleteCommentFromFirestore(id);
          }
     }
 }
 
-function performDelete(id) {
-    let comments = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    comments = comments.filter(comment => comment.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
-    renderComments(comments);
+// Delete from Firestore
+async function deleteCommentFromFirestore(id) {
+    try {
+        await deleteDoc(doc(db, COMMENTS_COLLECTION, id));
+    } catch (e) {
+        console.error("Error deleting document: ", e);
+        alert("삭제에 실패했습니다.");
+    }
 }
 
-// Helper to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+// Helper to prevent XSS is less critical with textContent but kept for structure if needed
+// function escapeHtml(text) { ... } -> We are using textContent which is safe.
 
+// Form Submit Handler
 if (commentForm) {
     commentForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -265,9 +296,17 @@ if (commentForm) {
             saveComment(author, text, password);
             commentInput.value = ''; 
             passwordInput.value = '';
-            // Keep author name for convenience
         } else if (!password) {
             alert('비밀번호를 입력해주세요.');
         }
     });
 }
+
+// Initial state check
+document.addEventListener('DOMContentLoaded', () => {
+    if (!gameActive) {
+        if(lifeDisplay) lifeDisplay.style.display = 'none';
+        if(comfortButton) comfortButton.disabled = true;
+        if(insultButton) insultButton.disabled = true;
+    }
+});

@@ -16,16 +16,18 @@ This is a web application game where the user gains or loses "LIFE" points by re
 *   **Interaction:**
     *   **Comfort Button:** Decreases LIFE by 1, shows a comforting message.
     *   **Insult Button:** Increases LIFE by 1, shows an insulting (motivating) message.
-*   **Comment System:** Users can leave comments which are stored locally.
-    *   **Deletion:** Users can delete their own comments using a password set during creation.
+*   **Comment System (Firestore):** Users can leave comments which are stored in a real-time database.
+    *   **Real-time Updates:** Comments appear instantly for all users.
+    *   **Deletion:** Users can delete their own comments using a password.
 
-## Current Task: Enhance Comment Deletion with Password
+## Current Task: Migrate to Firebase Firestore
 
-*   **Objective:** Secure the comment deletion feature so that only the author (or someone with the password) can delete a comment.
+*   **Objective:** Replace LocalStorage with Firebase Firestore to enable shared, persistent comments across devices.
 *   **Steps:**
-    1.  **HTML (`index.html`):** Add a password input field to the comment submission form.
-    2.  **CSS (`style.css`):** Style the password input to fit the existing form layout.
-    3.  **JavaScript (`main.js`):** 
-        *   Update `saveComment` to store the password.
-        *   Update `deleteComment` to prompt the user for a password and verify it before deleting.
-        *   Handle backward compatibility for comments without passwords (allow deletion or require a default).
+    1.  **HTML (`index.html`):** Update script tag to support ES Modules.
+    2.  **JavaScript (`main.js`):** 
+        *   Import Firebase SDKs (App, Firestore).
+        *   Initialize Firebase (User needs to provide Config).
+        *   Replace `saveComment` with `addDoc`.
+        *   Replace `loadComments` with `onSnapshot` (real-time listener).
+        *   Replace `deleteComment` with `deleteDoc`.
