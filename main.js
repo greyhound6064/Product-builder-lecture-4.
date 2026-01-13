@@ -5,6 +5,13 @@
 // ---------------------------------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
+    getAuth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    signOut, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
     getFirestore, 
     collection, 
     addDoc, 
@@ -30,8 +37,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const COMMENTS_COLLECTION = "comments";
+
+// Current User State
+let currentUser = null;
 
 
 // ---------------------------------------------------------
@@ -69,6 +80,14 @@ const messageDisplay = document.getElementById('messageDisplay');
 const lifeContainer = document.getElementById('lifeContainer');
 const lifeDisplay = document.getElementById('lifeDisplay');
 const lifeValueSpan = document.getElementById('lifeValue');
+
+// Auth DOM Elements
+const loginButton = document.getElementById('loginButton');
+const logoutButton = document.getElementById('logoutButton');
+const userProfile = document.getElementById('userProfile');
+const userPhoto = document.getElementById('userPhoto');
+const userName = document.getElementById('userName');
+const loginRequestMsg = document.getElementById('loginRequestMsg');
 
 
 // ---------------------------------------------------------
@@ -153,36 +172,108 @@ if (insultButton) insultButton.addEventListener('click', () => {
 
 
 // ---------------------------------------------------------
+// Authentication Logic
+// ---------------------------------------------------------
+
+// Sign In with Google
+async function handleLogin() {
+    const provider = new GoogleAuthProvider();
+    try {
+        await signInWithPopup(auth, provider);
+    } catch (error) {
+        console.error("Login failed:", error);
+        alert("로그인에 실패했습니다.");
+    }
+}
+
+// Sign Out
+async function handleLogout() {
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error("Logout failed:", error);
+    }
+}
+
+// Observe Auth State
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+        // User is signed in
+        loginButton.style.display = 'none';
+        userProfile.style.display = 'flex';
+        userName.textContent = user.displayName;
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/32'; // Fallback
+        
+        // Show comment form
+        if (commentForm) commentForm.style.display = 'flex';
+        if (loginRequestMsg) loginRequestMsg.style.display = 'none';
+    } else {
+        // User is signed out
+        loginButton.style.display = 'block';
+        userProfile.style.display = 'none';
+        userName.textContent = '';
+        userPhoto.src = '';
+        
+        // Hide comment form
+        if (commentForm) commentForm.style.display = 'none';
+        if (loginRequestMsg) loginRequestMsg.style.display = 'block';
+    }
+    
+    // Re-render comments to update delete button visibility based on new auth state
+    // We trigger a re-fetch or just wait for the next snapshot update. 
+    // Since snapshot listener is active, we can just clear list and let it re-populate or trigger a manual re-render if we had the data stored.
+    // For simplicity with real-time listeners, we might need to store the last received comments to re-render them immediately with new permissions,
+    // but the snapshot listener doesn't automatically fire on auth change unless data changes.
+    // Let's just rely on the user seeing the correct buttons when new data arrives or they refresh, 
+    // BUT better UX is to re-render immediately. We'll add a simple reload of comments if needed,
+    // but actually, we don't have the 'comments' array in global scope easily without modifying the structure.
+    // So for this simple app, we will let the next snapshot update handle it OR the user can refresh.
+    // Ideally, we'd separate 'data fetching' from 'rendering' more cleanly.
+    // Let's modify the onSnapshot to store data globally so we can re-render here.
+});
+
+if (loginButton) loginButton.addEventListener('click', handleLogin);
+if (logoutButton) logoutButton.addEventListener('click', handleLogout);
+
+
+// ---------------------------------------------------------
 // Comment System Logic (Firebase Firestore)
 // ---------------------------------------------------------
 
 const commentForm = document.getElementById('commentForm');
 const commentInput = document.getElementById('commentInput');
-const authorInput = document.getElementById('authorInput');
-const passwordInput = document.getElementById('passwordInput');
 const commentList = document.getElementById('commentList');
+let currentCommentsData = []; // Store for re-rendering on auth change
 
 // Listen for real-time updates
 const q = query(collection(db, COMMENTS_COLLECTION), orderBy('createdAt', 'desc'));
 const unsubscribe = onSnapshot(q, (snapshot) => {
     // Convert snapshot to array of objects
-    const comments = snapshot.docs.map(doc => ({
+    currentCommentsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
     }));
-    renderComments(comments);
+    renderComments(currentCommentsData);
 });
 
+// Re-render on auth state change (using the stored data)
+onAuthStateChanged(auth, (user) => {
+    renderComments(currentCommentsData);
+});
+
+
 // Save Comment to Firestore
-async function saveComment(author, text, password) {
+async function saveComment(text) {
+    if (!currentUser) return;
+
     try {
         await addDoc(collection(db, COMMENTS_COLLECTION), {
-            author: author || '익명',
+            uid: currentUser.uid,          // Security: Store who wrote it
+            author: currentUser.displayName, // Display Name
+            photoURL: currentUser.photoURL,  // Optional: Profile Pic
             text: text,
-            password: password,
             createdAt: serverTimestamp(),
-            // Store a formatted date string for easy display, 
-            // though client-side formatting of timestamp is often better.
             date: new Date().toLocaleString() 
         });
     } catch (e) {
@@ -219,21 +310,22 @@ function renderComments(comments) {
         
         const dateSpan = document.createElement('span');
         dateSpan.className = 'comment-date';
-        // Handle case where serverTimestamp hasn't synced back yet
         dateSpan.textContent = comment.date || new Date().toLocaleString();
         
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-comment-btn';
-        deleteBtn.textContent = '삭제';
-        deleteBtn.ariaLabel = '삭제';
-        
-        // Attach delete event
-        deleteBtn.addEventListener('click', () => {
-            handleDeleteRequest(comment.id, comment.password);
-        });
-
         metaDiv.appendChild(dateSpan);
-        metaDiv.appendChild(deleteBtn);
+
+        // SHOW DELETE BUTTON ONLY IF OWNER
+        if (currentUser && comment.uid === currentUser.uid) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-comment-btn';
+            deleteBtn.textContent = '삭제';
+            deleteBtn.ariaLabel = '삭제';
+            
+            deleteBtn.addEventListener('click', () => {
+                deleteCommentFromFirestore(comment.id);
+            });
+            metaDiv.appendChild(deleteBtn);
+        }
         
         header.appendChild(authorSpan);
         header.appendChild(metaDiv);
@@ -249,55 +341,28 @@ function renderComments(comments) {
     });
 }
 
-// Handle Delete Request (Password Check)
-async function handleDeleteRequest(id, correctPassword) {
-    if (correctPassword) {
-        // UI trick: slight delay to ensure prompt shows cleanly
-        setTimeout(async () => {
-            const inputPw = prompt('비밀번호를 입력하세요:');
-            if (inputPw === null) return; 
-            
-            if (inputPw !== correctPassword) {
-                alert('비밀번호가 일치하지 않습니다.');
-                return;
-            }
-            await deleteCommentFromFirestore(id);
-        }, 10);
-    } else {
-        // Legacy or no-password comments
-         if (confirm('정말 삭제하시겠습니까?')) {
-             await deleteCommentFromFirestore(id);
-         }
-    }
-}
-
 // Delete from Firestore
 async function deleteCommentFromFirestore(id) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
     try {
         await deleteDoc(doc(db, COMMENTS_COLLECTION, id));
     } catch (e) {
         console.error("Error deleting document: ", e);
-        alert("삭제에 실패했습니다.");
+        alert("삭제에 실패했습니다. (권한이 없을 수 있습니다)");
     }
 }
 
-// Helper to prevent XSS is less critical with textContent but kept for structure if needed
-// function escapeHtml(text) { ... } -> We are using textContent which is safe.
 
 // Form Submit Handler
 if (commentForm) {
     commentForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const text = commentInput.value.trim();
-        const author = authorInput.value.trim();
-        const password = passwordInput.value.trim();
         
-        if (text && password) {
-            saveComment(author, text, password);
+        if (text) {
+            saveComment(text);
             commentInput.value = ''; 
-            passwordInput.value = '';
-        } else if (!password) {
-            alert('비밀번호를 입력해주세요.');
         }
     });
 }

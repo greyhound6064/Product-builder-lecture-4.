@@ -16,18 +16,25 @@ This is a web application game where the user gains or loses "LIFE" points by re
 *   **Interaction:**
     *   **Comfort Button:** Decreases LIFE by 1, shows a comforting message.
     *   **Insult Button:** Increases LIFE by 1, shows an insulting (motivating) message.
+*   **Authentication (Google Sign-In):**
+    *   Users can sign in with their Google account.
+    *   Identifies the author of comments automatically.
 *   **Comment System (Firestore):** Users can leave comments which are stored in a real-time database.
     *   **Real-time Updates:** Comments appear instantly for all users.
-    *   **Deletion:** Users can delete their own comments using a password.
+    *   **Ownership:** Only the authenticated author can delete their own comments.
+    *   **No Passwords:** Security is handled via user unique IDs (UID).
 
-## Current Task: Migrate to Firebase Firestore
+## Current Task: Implement Google Sign-In
 
-*   **Objective:** Replace LocalStorage with Firebase Firestore to enable shared, persistent comments across devices.
+*   **Objective:** Integrate Firebase Authentication to manage user identity and secure comment ownership.
 *   **Steps:**
-    1.  **HTML (`index.html`):** Update script tag to support ES Modules.
-    2.  **JavaScript (`main.js`):** 
-        *   Import Firebase SDKs (App, Firestore).
-        *   Initialize Firebase (User needs to provide Config).
-        *   Replace `saveComment` with `addDoc`.
-        *   Replace `loadComments` with `onSnapshot` (real-time listener).
-        *   Replace `deleteComment` with `deleteDoc`.
+    1.  **HTML (`index.html`):** 
+        *   Add Login/Logout buttons and a User Profile display area.
+        *   Remove "Author" and "Password" fields from the comment form (data comes from Auth).
+    2.  **CSS (`style.css`):** Style the new auth UI elements.
+    3.  **JavaScript (`main.js`):** 
+        *   Initialize Firebase Auth.
+        *   Implement `signInWithPopup` and `signOut`.
+        *   Use `onAuthStateChanged` to manage UI state (show/hide form, toggle buttons).
+        *   Update comment saving to include User ID (`uid`).
+        *   Update comment rendering to show "Delete" button *only* if `current_user.uid == comment.uid`.

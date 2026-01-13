@@ -6,7 +6,15 @@
     <title>당근과 채찍 게임</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+    <!-- User Profile / Auth Section -->
+    <div id="authContainer">
+        <div id="userProfile" style="display: none;">
+            <img id="userPhoto" src="" alt="Profile Photo">
+            <span id="userName"></span>
+            <button id="logoutButton" class="auth-btn">로그아웃</button>
+        </div>
+    </div>
+
     <h1>당근과 채찍 게임</h1>
     <div id="lifeContainer">
         <div id="lifeDisplay">LIFE: <span id="lifeValue">10</span></div>
@@ -24,12 +32,19 @@
     <!-- Comment Section -->
     <div id="commentSection">
         <h3>댓글</h3>
-        <form class="comment-form" id="commentForm">
-            <input type="text" id="authorInput" placeholder="이름 (선택)" style="flex: 0 0 20%;">
-            <input type="password" id="passwordInput" placeholder="비밀번호" required style="flex: 0 0 20%;">
-            <input type="text" id="commentInput" placeholder="댓글을 입력하세요..." required>
+        
+        <!-- Logged In: Show Form -->
+        <form class="comment-form" id="commentForm" style="display: none;">
+            <input type="text" id="commentInput" placeholder="응원의 한마디 또는 따끔한 충고를 남겨주세요..." required>
             <button type="submit">등록</button>
         </form>
+
+        <!-- Logged Out: Show Message with Login Button -->
+        <div id="loginRequestMsg" style="text-align: center; padding: 20px; color: #666; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span>댓글을 작성하려면 로그인이 필요합니다.</span>
+            <button id="loginButton" class="auth-btn">Google 로그인</button>
+        </div>
+
         <ul id="commentList">
             <!-- Comments will be loaded here -->
         </ul>
