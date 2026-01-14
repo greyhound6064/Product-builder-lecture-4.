@@ -186,10 +186,7 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 거대화 (2배)
-    PLAYER_SIZE = 60; // 30 * 2
-    player.style.width = PLAYER_SIZE + 'px';
-    player.style.height = PLAYER_SIZE + 'px';
+    // 크기 변화 없음 (기존 로직 제거)
 
     if (immuneTimeoutId) clearTimeout(immuneTimeoutId);
     
@@ -200,10 +197,12 @@ function deactivateImmunity() {
     isImmune = false;
     player.classList.remove('immune');
     
-    // 크기 원상복구
-    PLAYER_SIZE = 30;
-    player.style.width = PLAYER_SIZE + 'px';
-    player.style.height = PLAYER_SIZE + 'px';
+    // 크기 원상복구 로직 제거 (원래 불필요)
+}
+
+function deactivateImmunity() {
+    isImmune = false;
+    player.classList.remove('immune');
 }
 
 function addEntity(type) {
@@ -384,4 +383,14 @@ function gameOver() {
     
     finalScoreDisplay.textContent = score;
     gameOverModal.classList.remove('hidden');
+
+    // 랭킹 폼 초기화 (UI 관련 로직 추가)
+    const submitBtn = document.getElementById('submit-score-btn');
+    if(submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "기록 저장하기";
+        document.getElementById('player-name').value = "";
+        document.getElementById('player-pw').value = "";
+        document.getElementById('player-msg').value = "";
+    }
 }

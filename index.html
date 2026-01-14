@@ -16,6 +16,7 @@
         </div>
         <div class="controls">
             <button id="start-btn">게임 시작</button>
+            <button id="rank-btn" style="background-color: #f59e0b; margin-left: 10px;">랭킹 보기</button>
             <p class="mobile-controls">PC: 방향키 / 모바일: 화면 드래그</p>
         </div>
         
@@ -24,12 +25,142 @@
             <div class="modal-content">
                 <h2>으악! 묻었어요! 😱</h2>
                 <p>최종 점수: <span id="final-score">0</span></p>
-                <button id="restart-btn">다시 하기</button>
+                <div id="record-form" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="player-name" placeholder="이름 (3글자 이내)" maxlength="3" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <input type="password" id="player-pw" placeholder="비밀번호 (4자리)" maxlength="4" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <input type="text" id="player-msg" placeholder="한마디 (20자 이내)" maxlength="20" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <button id="submit-score-btn" style="background-color: #10b981;">기록 저장하기</button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button id="restart-btn">다시 하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ranking Modal -->
+        <div id="ranking-modal" class="hidden">
+            <div class="modal-content" style="max-width: 500px; width: 90%;">
+                <h2>🏆 명예의 전당 🏆</h2>
+                <div id="ranking-list" style="max-height: 300px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                    <!-- 랭킹 아이템이 여기에 동적으로 추가됨 -->
+                    <p>로딩중...</p>
+                </div>
+                <button id="close-rank-btn" style="background-color: #64748b;">닫기</button>
             </div>
         </div>
     </div>
 
     <audio id="bgm" src="Overboard - The Grey Room _ Golden Palms.mp3" loop preload="auto"></audio>
+    
+    <!-- Firebase SDK & Ranking Logic -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // TODO: Replace the following with your app's Firebase project configuration
+        // 사용자가 직접 설정값을 채워넣어야 함
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase (설정이 유효할 때만)
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase initialized");
+        } catch (e) {
+            console.error("Firebase config missing or invalid. Ranking system disabled.");
+        }
+
+        const submitBtn = document.getElementById('submit-score-btn');
+        const rankBtn = document.getElementById('rank-btn');
+        const closeRankBtn = document.getElementById('close-rank-btn');
+        const rankingModal = document.getElementById('ranking-modal');
+        const rankingList = document.getElementById('ranking-list');
+
+        // 점수 제출
+        submitBtn.addEventListener('click', async () => {
+            if (!db) { alert("랭킹 시스템이 설정되지 않았습니다."); return; }
+            
+            const name = document.getElementById('player-name').value;
+            const pw = document.getElementById('player-pw').value;
+            const msg = document.getElementById('player-msg').value;
+            // finalScore is updated in poop_game.js logic, but accessible via DOM textContent
+            const score = parseInt(document.getElementById('final-score').textContent, 10);
+            
+            if (!name || !pw) {
+                alert("이름과 비밀번호를 입력해주세요!");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "ranks"), {
+                    name: name,
+                    password: pw,
+                    message: msg,
+                    score: score,
+                    date: new Date()
+                });
+                alert("기록이 저장되었습니다!");
+                submitBtn.disabled = true; // 중복 제출 방지
+                submitBtn.textContent = "저장 완료";
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("저장 실패 ㅠㅠ");
+            }
+        });
+
+        // 랭킹 보기
+        rankBtn.addEventListener('click', async () => {
+            rankingModal.classList.remove('hidden');
+            if (!db) {
+                rankingList.innerHTML = "<p>Firebase 설정이 필요합니다.</p>";
+                return;
+            }
+            
+            rankingList.innerHTML = "<p>로딩중...</p>";
+            try {
+                const q = query(collection(db, "ranks"), orderBy("score", "desc"), limit(10));
+                const querySnapshot = await getDocs(q);
+                
+                rankingList.innerHTML = "";
+                if (querySnapshot.empty) {
+                    rankingList.innerHTML = "<p>아직 기록이 없습니다. 첫 번째 주인공이 되어보세요!</p>";
+                } else {
+                    let rank = 1;
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const item = document.createElement('div');
+                        item.style.borderBottom = "1px solid #eee";
+                        item.style.padding = "10px 0";
+                        item.style.display = "flex";
+                        item.style.justifyContent = "space-between";
+                        item.innerHTML = `
+                            <span><strong>${rank}위</strong> ${data.name}</span>
+                            <span>${data.score}점 <small style="color:#888;">(${data.message || '-'})</small></span>
+                        `;
+                        rankingList.appendChild(item);
+                        rank++;
+                    });
+                }
+            } catch (e) {
+                console.error("Error getting documents: ", e);
+                rankingList.innerHTML = "<p>랭킹을 불러오는 데 실패했습니다.</p>";
+            }
+        });
+
+        closeRankBtn.addEventListener('click', () => {
+            rankingModal.classList.add('hidden');
+        });
+        
+    </script>
     <script src="poop_game.js"></script>
 </body>
 </html>
