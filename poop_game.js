@@ -59,56 +59,43 @@ document.addEventListener('keyup', (e) => {
     if(keys.hasOwnProperty(e.key)) keys[e.key] = false;
 });
 
-// Mobile Joystick Controls
-const joystickContainer = document.getElementById('joystick-container');
-const joystickKnob = document.getElementById('joystick-knob');
-let joyX = 0; 
-let joyY = 0; 
-let joystickActive = false;
-const JOYSTICK_MAX_RADIUS = 35; 
+// Mobile Touch Controls (Drag)
+let touchStartX = 0;
+let touchStartY = 0;
+let touchActive = false;
 
-joystickContainer.addEventListener('touchstart', (e) => {
-    e.preventDefault(); 
-    joystickActive = true;
-    updateJoystick(e.touches[0]);
-});
-
-joystickContainer.addEventListener('touchmove', (e) => {
+gameArea.addEventListener('touchstart', (e) => {
+    if (!gameActive) return;
+    touchActive = true;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
     e.preventDefault();
-    if (joystickActive) {
-        updateJoystick(e.touches[0]);
-    }
 });
 
-joystickContainer.addEventListener('touchend', (e) => {
+gameArea.addEventListener('touchmove', (e) => {
+    if (!gameActive || !touchActive) return;
     e.preventDefault();
-    joystickActive = false;
-    joyX = 0;
-    joyY = 0;
-    joystickKnob.style.transform = `translate(-50%, -50%)`; 
+    
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    
+    const diffX = touchX - touchStartX;
+    const diffY = touchY - touchStartY;
+    
+    // 드래그 감도: 1.0 (직관적인 1:1 이동)
+    playerX += diffX; 
+    playerY += diffY;
+    
+    touchStartX = touchX;
+    touchStartY = touchY;
+    
+    clampPlayer();
+    updatePlayerPosition();
 });
 
-function updateJoystick(touch) {
-    const rect = joystickContainer.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    let deltaX = touch.clientX - centerX;
-    let deltaY = touch.clientY - centerY;
-    
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    
-    if (distance > JOYSTICK_MAX_RADIUS) {
-        const angle = Math.atan2(deltaY, deltaX);
-        deltaX = Math.cos(angle) * JOYSTICK_MAX_RADIUS;
-        deltaY = Math.sin(angle) * JOYSTICK_MAX_RADIUS;
-    }
-    
-    joystickKnob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
-    
-    joyX = deltaX / JOYSTICK_MAX_RADIUS;
-    joyY = deltaY / JOYSTICK_MAX_RADIUS;
-}
+gameArea.addEventListener('touchend', () => {
+    touchActive = false;
+});
 
 
 function startGame() {
@@ -121,8 +108,7 @@ function startGame() {
     
     bgm.play().catch(e => console.log("Audio play failed:", e));
 
-    // Reset Player (Center logic adjusted for top/left: 0)
-    // CSS top:0, left:0. Center is (Width/2 - Size/2).
+    // Reset Player
     playerX = gameWidth / 2 - PLAYER_SIZE / 2;
     playerY = gameHeight / 2 - PLAYER_SIZE / 2;
     deactivateImmunity(); 
@@ -132,7 +118,8 @@ function startGame() {
     poops = [];
     hamburgers = [];
 
-    for(let i=0; i<10; i++) {
+    // Start with 7 Poops (Reduced from 10)
+    for(let i=0; i<7; i++) {
         addEntity('poop');
     }
 
@@ -170,7 +157,6 @@ function resetGame() {
 }
 
 function clampPlayer() {
-    // Use cached dimensions
     const maxWidth = gameWidth - PLAYER_SIZE;
     const maxHeight = gameHeight - PLAYER_SIZE;
     
@@ -210,7 +196,6 @@ function addEntity(type) {
     let startX, startY;
     const edge = Math.floor(Math.random() * 4); 
     
-    // Use cached dimensions
     switch(edge) {
         case 0: // Top
             startX = Math.random() * (gameWidth - size);
@@ -272,22 +257,17 @@ function addEntity(type) {
 function gameLoop() {
     if (!gameActive) return;
 
-    // 1. Move Player
+    // 1. Move Player (Keyboard)
     if (keys.ArrowUp) playerY -= MOVE_SPEED;
     if (keys.ArrowDown) playerY += MOVE_SPEED;
     if (keys.ArrowLeft) playerX -= MOVE_SPEED;
     if (keys.ArrowRight) playerX += MOVE_SPEED;
     
-    // Joystick Input (Mobile)
-    if (joyX !== 0 || joyY !== 0) {
-        playerX += joyX * MOVE_SPEED * 1.2; 
-        playerY += joyY * MOVE_SPEED * 1.2;
-    }
+    // Joystick logic removed. Touch drag is handled in touchmove event directly.
 
     clampPlayer();
     updatePlayerPosition();
 
-    // Use cached dimensions
     const maxWidth = gameWidth;
     const maxHeight = gameHeight;
 
@@ -307,10 +287,8 @@ function gameLoop() {
 
             // Render Update
             if (e.type === 'poop') {
-                // Use transform for poops (Performance)
                 e.element.style.transform = `translate3d(${e.x}px, ${e.y}px, 0)`;
             } else {
-                // Use left/top for hamburger (Compatibility with animation)
                 e.element.style.left = e.x + 'px';
                 e.element.style.top = e.y + 'px';
             }
