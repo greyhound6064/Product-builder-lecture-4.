@@ -261,8 +261,8 @@ function addEntity(type) {
 
     gameArea.appendChild(el);
 
-    // 속도 설정 (햄버거 속도를 똥과 동일하게 4로 조정)
-    let speedMultiplier = 4; 
+    // 속도 설정 (햄버거 속도를 똥보다 1.5배 빠르게 설정)
+    let speedMultiplier = type === 'poop' ? 4 : 6; 
     
     let vx = (Math.random() - 0.5) * speedMultiplier; 
     let vy = (Math.random() - 0.5) * speedMultiplier;
@@ -272,8 +272,8 @@ function addEntity(type) {
     if (edge === 3 && vx < 0) vx = -vx;
     if (edge === 1 && vx > 0) vx = -vx;
     
-    // 최소 속도 보정 (햄버거 최소 속도를 똥과 동일하게 1로 조정)
-    const minSpeed = 1; 
+    // 최소 속도 보정 (햄버거 최소 속도도 1.5배 보정)
+    const minSpeed = type === 'poop' ? 1 : 1.5; 
     if (Math.abs(vx) < minSpeed) vx = vx < 0 ? -minSpeed : minSpeed;
     if (Math.abs(vy) < minSpeed) vy = vy < 0 ? -minSpeed : minSpeed;
 
