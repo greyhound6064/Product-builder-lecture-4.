@@ -270,10 +270,10 @@ function gameLoop() {
     if (keys.ArrowRight) playerX += MOVE_SPEED;
     
     // Joystick Input (Mobile)
-    // 감도를 높이기 위해 MOVE_SPEED에 추가 계수(예: 1.5 ~ 2.0)를 곱함
+    // 감도를 높이기 위해 MOVE_SPEED에 추가 계수(예: 1.2)를 곱함 (최적화)
     if (joyX !== 0 || joyY !== 0) {
-        playerX += joyX * MOVE_SPEED * 2.0; 
-        playerY += joyY * MOVE_SPEED * 2.0;
+        playerX += joyX * MOVE_SPEED * 1.2; 
+        playerY += joyY * MOVE_SPEED * 1.2;
     }
 
     clampPlayer();
@@ -305,6 +305,14 @@ function gameLoop() {
                     if (!isImmune) {
                         gameOver();
                         return true; // Game Over triggered
+                    } else {
+                        // 무적 상태일 때 똥을 먹어치움 (제거)
+                        e.element.remove();
+                        arr.splice(i, 1);
+                        i--;
+                        // 추가 점수 획득 효과 (선택 사항)
+                        score += 10;
+                        scoreDisplay.textContent = score;
                     }
                 } else if (e.type === 'hamburger') {
                     activateImmunity();
