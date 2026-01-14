@@ -1,6 +1,7 @@
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const scoreDisplay = document.getElementById('score');
+const eatenCountDisplay = document.getElementById('eaten-count'); // 먹은 똥 표시 요소
 const startBtn = document.getElementById('start-btn');
 const gameOverModal = document.getElementById('game-over-modal');
 const finalScoreDisplay = document.getElementById('final-score');
@@ -8,6 +9,7 @@ const restartBtn = document.getElementById('restart-btn');
 const bgm = document.getElementById('bgm'); 
 
 let score = 0;
+let eatenCount = 0; // 먹어치운 똥 카운트
 let gameActive = false;
 let gameLoopId;
 let scoreIntervalId;
@@ -83,9 +85,9 @@ document.addEventListener('touchmove', (e) => {
     const diffX = touchX - touchStartX;
     const diffY = touchY - touchStartY;
     
-    // 드래그 감도: 1.0 (직관적인 1:1 이동)
-    playerX += diffX; 
-    playerY += diffY;
+    // 드래그 감도: 0.7 (속도 하향 조정)
+    playerX += diffX * 0.7; 
+    playerY += diffY * 0.7;
     
     touchStartX = touchX;
     touchStartY = touchY;
@@ -103,7 +105,9 @@ function startGame() {
     updateGameDimensions(); // 시작 전 확실하게 치수 업데이트
     gameActive = true;
     score = 0;
+    eatenCount = 0; // 초기화
     scoreDisplay.textContent = score;
+    eatenCountDisplay.textContent = eatenCount;
     startBtn.style.display = 'none';
     gameOverModal.classList.add('hidden');
     
@@ -322,7 +326,9 @@ function gameLoop() {
                         arr.splice(i, 1);
                         i--;
                         score += 10;
+                        eatenCount++; // 먹은 똥 증가
                         scoreDisplay.textContent = score;
+                        eatenCountDisplay.textContent = eatenCount;
                     }
                 } else if (e.type === 'hamburger') {
                     activateImmunity();
