@@ -295,13 +295,27 @@ function gameLoop() {
 }
 
 function checkCollision(entity) {
-    const padding = 5; 
+    // 히트박스 보정 (이미지 안쪽으로 판정을 좁힘)
+    // 플레이어: 40px 크기에서 상하좌우 8px씩 안쪽으로 (여유롭게)
+    const playerInset = 8; 
+    // 똥/햄버거: 크기에서 상하좌우 4px씩 안쪽으로
+    const entityInset = 4; 
     
+    const playerLeft = playerX + playerInset;
+    const playerRight = playerX + PLAYER_SIZE - playerInset;
+    const playerTop = playerY + playerInset;
+    const playerBottom = playerY + PLAYER_SIZE - playerInset;
+
+    const entityLeft = entity.x + entityInset;
+    const entityRight = entity.x + entity.size - entityInset;
+    const entityTop = entity.y + entityInset;
+    const entityBottom = entity.y + entity.size - entityInset;
+
     return (
-        playerX + padding < entity.x + entity.size - padding &&
-        playerX + PLAYER_SIZE - padding > entity.x + padding &&
-        playerY + padding < entity.y + entity.size - padding &&
-        playerY + PLAYER_SIZE - padding > entity.y + padding
+        playerLeft < entityRight &&
+        playerRight > entityLeft &&
+        playerTop < entityBottom &&
+        playerBottom > entityTop
     );
 }
 
