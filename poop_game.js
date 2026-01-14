@@ -43,7 +43,7 @@ let isImmune = false;
 let poops = []; 
 let hamburgers = []; 
 const POOP_SIZE = 18; // 기본 크기 18px
-const HAMBURGER_SIZE = 18; // 똥 크기와 동일
+const HAMBURGER_SIZE = 15; // 햄버거 크기 축소 (18 -> 15)
 
 // Input State
 const keys = {
@@ -130,8 +130,8 @@ function startGame() {
     player.style.width = '30px';
     player.style.height = '30px';
     
-    deactivateImmunity(); 
-    updatePlayerPosition();
+deactivateImmunity(); 
+updatePlayerPosition();
 
     document.querySelectorAll('.poop, .hamburger').forEach(el => el.remove());
     poops = [];
@@ -167,7 +167,7 @@ function startGame() {
         if (hamburgers.length < 2) {
             addEntity('hamburger');
         }
-    }, 10000);
+    }, 15000); // 햄버거 생성 간격 늦춤 (10초 -> 15초)
 }
 
 function resetGame() {
@@ -261,19 +261,23 @@ function addEntity(type) {
 
     gameArea.appendChild(el);
 
-    let vx = (Math.random() - 0.5) * 4; 
-    let vy = (Math.random() - 0.5) * 4;
+    // 속도 설정
+    let speedMultiplier = type === 'poop' ? 4 : 15; // 햄버거 속도 대폭 증가 (4 -> 15)
+    
+    let vx = (Math.random() - 0.5) * speedMultiplier; 
+    let vy = (Math.random() - 0.5) * speedMultiplier;
     
     if (edge === 0 && vy < 0) vy = -vy;
     if (edge === 2 && vy > 0) vy = -vy;
     if (edge === 3 && vx < 0) vx = -vx;
     if (edge === 1 && vx > 0) vx = -vx;
     
-    if (Math.abs(vx) < 1) vx = vx < 0 ? -1 : 1;
-    if (Math.abs(vy) < 1) vy = vy < 0 ? -1 : 1;
+    // 최소 속도 보정
+    const minSpeed = type === 'poop' ? 1 : 5; // 햄버거 최소 속도 보정
+    if (Math.abs(vx) < minSpeed) vx = vx < 0 ? -minSpeed : minSpeed;
+    if (Math.abs(vy) < minSpeed) vy = vy < 0 ? -minSpeed : minSpeed;
 
-    const entity = {
-        element: el,
+    const entity = {        element: el,
         x: startX,
         y: startY,
         vx: vx,

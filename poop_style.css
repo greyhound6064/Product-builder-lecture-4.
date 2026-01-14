@@ -83,10 +83,10 @@ h1 {
 
 .hamburger {
     position: absolute;
-    font-size: 18px; /* 똥 크기와 동일하게 18px */
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
+    font-size: 15px; /* 햄버거 크기 축소 18px -> 15px */
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
     z-index: 6;
     will-change: transform;
     animation: pulse 1s infinite;
