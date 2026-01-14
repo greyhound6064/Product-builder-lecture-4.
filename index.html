@@ -25,14 +25,15 @@
             <div class="modal-content">
                 <h2>으악! 묻었어요! 😱</h2>
                 <p>최종 점수: <span id="final-score">0</span></p>
-                <div id="record-form" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="player-name" placeholder="이름 (3글자 이내)" maxlength="3" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                     <input type="password" id="player-pw" placeholder="비밀번호 (4자리)" maxlength="4" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                     <input type="text" id="player-msg" placeholder="한마디 (20자 이내)" maxlength="20" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                     <button id="submit-score-btn" style="background-color: #10b981;">기록 저장하기</button>
                 </div>
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
                     <button id="restart-btn">다시 하기</button>
+                    <button id="view-rank-over-btn" style="background-color: #f59e0b;">랭킹 보기</button>
                 </div>
             </div>
         </div>
@@ -83,6 +84,7 @@
 
         const submitBtn = document.getElementById('submit-score-btn');
         const rankBtn = document.getElementById('rank-btn');
+        const viewRankOverBtn = document.getElementById('view-rank-over-btn'); // 새 버튼
         const closeRankBtn = document.getElementById('close-rank-btn');
         const rankingModal = document.getElementById('ranking-modal');
         const rankingList = document.getElementById('ranking-list');
@@ -119,8 +121,8 @@
             }
         });
 
-        // 랭킹 보기
-        rankBtn.addEventListener('click', async () => {
+        // 랭킹 보기 공통 함수
+        const showRanking = async () => {
             rankingModal.classList.remove('hidden');
             if (!db) {
                 rankingList.innerHTML = "<p>Firebase 설정이 필요합니다.</p>";
@@ -156,7 +158,10 @@
                 console.error("Error getting documents: ", e);
                 rankingList.innerHTML = "<p>랭킹을 불러오는 데 실패했습니다.</p>";
             }
-        });
+        };
+
+        rankBtn.addEventListener('click', showRanking);
+        viewRankOverBtn.addEventListener('click', showRanking); // 게임 오버 창에서도 작동
 
         closeRankBtn.addEventListener('click', () => {
             rankingModal.classList.add('hidden');
