@@ -124,8 +124,8 @@ function startGame() {
     poops = [];
     hamburgers = [];
 
-    // Start with 7 Poops (Reduced from 10)
-    for(let i=0; i<7; i++) {
+    // Start with 1 Poop (Reduced from 7)
+    for(let i=0; i<1; i++) {
         addEntity('poop');
     }
 
