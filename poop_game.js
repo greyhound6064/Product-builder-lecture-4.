@@ -35,7 +35,7 @@ updateGameDimensions();
 // Player State
 let playerX = 0;
 let playerY = 0;
-let PLAYER_SIZE = 30; // 기본 크기 30px
+let PLAYER_SIZE = 9; // 캐릭터 크기 축소 (18 / 2 = 9)
 const MOVE_SPEED = 5; 
 let isImmune = false; 
 
@@ -122,13 +122,13 @@ function startGame() {
     bgm.play().catch(e => console.log("Audio play failed:", e));
 
     // Reset Player
-    playerX = gameWidth / 2 - 30 / 2; // PLAYER_SIZE가 변할 수 있으므로 상수로 계산
-    playerY = gameHeight / 2 - 30 / 2;
+    playerX = gameWidth / 2 - 9 / 2; // PLAYER_SIZE(9) 반영
+    playerY = gameHeight / 2 - 9 / 2;
     
     // 크기 및 상태 초기화
-    PLAYER_SIZE = 30;
-    player.style.width = '30px';
-    player.style.height = '30px';
+    PLAYER_SIZE = 9;
+    player.style.width = '9px';
+    player.style.height = '9px';
     
 deactivateImmunity(); 
 updatePlayerPosition();
@@ -194,10 +194,10 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 햄버거 먹으면 1.5배 커짐 (30 * 1.5 = 45)
-    PLAYER_SIZE = 45;
-    player.style.width = '45px';
-    player.style.height = '45px';
+    // 햄버거 먹으면 1.5배 커짐 (9 * 1.5 = 13.5 -> 14)
+    PLAYER_SIZE = 14;
+    player.style.width = '14px';
+    player.style.height = '14px';
     
     clampPlayer(); // 커진 크기에 맞춰 위치 보정
     updatePlayerPosition();
@@ -211,10 +211,10 @@ function deactivateImmunity() {
     isImmune = false;
     player.classList.remove('immune');
     
-    // 다시 원래 크기로 (30)
-    PLAYER_SIZE = 30;
-    player.style.width = '30px';
-    player.style.height = '30px';
+    // 다시 원래 크기로 (9)
+    PLAYER_SIZE = 9;
+    player.style.width = '9px';
+    player.style.height = '9px';
 
     clampPlayer(); // 작아진 크기에 맞춰 위치 보정
     updatePlayerPosition();
