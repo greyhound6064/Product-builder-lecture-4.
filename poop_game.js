@@ -31,14 +31,14 @@ updateGameDimensions();
 // Player State
 let playerX = 0;
 let playerY = 0;
-const PLAYER_SIZE = 40; 
+const PLAYER_SIZE = 10; // 40 / 4
 const MOVE_SPEED = 5; 
 let isImmune = false; 
 
 // Entities
 let poops = []; 
 let hamburgers = []; 
-const POOP_SIZE = 24; 
+const POOP_SIZE = 6; // 24 / 4
 const HAMBURGER_SIZE = 30;
 
 // Input State
@@ -327,8 +327,8 @@ function gameLoop() {
 }
 
 function checkCollision(entity) {
-    const playerInset = 8; 
-    const entityInset = 4; 
+    const playerInset = 2; // 1/4 보정
+    const entityInset = 1; // 1/4 보정
     
     const playerLeft = playerX + playerInset;
     const playerRight = playerX + PLAYER_SIZE - playerInset;

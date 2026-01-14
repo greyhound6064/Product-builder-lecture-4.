@@ -58,8 +58,10 @@ h1 {
     position: absolute;
     top: 0;
     left: 0;
-    width: 40px;
-    height: 40px;
+    width: 100%; /* 부모(js에서 설정하는 10px)에 맞춤 */
+    height: 100%;
+    max-width: 10px; /* 고정 크기 1/4 */
+    max-height: 10px;
     z-index: 10;
     background-image: url('412.PNG');
     background-size: contain;
@@ -72,10 +74,10 @@ h1 {
     position: absolute;
     top: 0;
     left: 0;
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
+    font-size: 6px; /* 1/4 크기 */
+    width: 6px;
+    height: 6px;
+    line-height: 6px;
     z-index: 5;
     will-change: transform; 
 }
