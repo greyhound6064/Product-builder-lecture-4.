@@ -31,14 +31,14 @@ updateGameDimensions();
 // Player State
 let playerX = 0;
 let playerY = 0;
-const PLAYER_SIZE = 10; // 40 / 4
+let PLAYER_SIZE = 30; // 기본 크기 30px
 const MOVE_SPEED = 5; 
 let isImmune = false; 
 
 // Entities
 let poops = []; 
 let hamburgers = []; 
-const POOP_SIZE = 6; // 24 / 4
+const POOP_SIZE = 18; // 기본 크기 18px
 const HAMBURGER_SIZE = 30;
 
 // Input State
@@ -109,8 +109,14 @@ function startGame() {
     bgm.play().catch(e => console.log("Audio play failed:", e));
 
     // Reset Player
-    playerX = gameWidth / 2 - PLAYER_SIZE / 2;
-    playerY = gameHeight / 2 - PLAYER_SIZE / 2;
+    playerX = gameWidth / 2 - 30 / 2; // PLAYER_SIZE가 변할 수 있으므로 상수로 계산
+    playerY = gameHeight / 2 - 30 / 2;
+    
+    // 크기 및 상태 초기화
+    PLAYER_SIZE = 30;
+    player.style.width = '30px';
+    player.style.height = '30px';
+    
     deactivateImmunity(); 
     updatePlayerPosition();
 
@@ -175,6 +181,11 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
+    // 거대화 (3배)
+    PLAYER_SIZE = 90;
+    player.style.width = PLAYER_SIZE + 'px';
+    player.style.height = PLAYER_SIZE + 'px';
+
     if (immuneTimeoutId) clearTimeout(immuneTimeoutId);
     
     immuneTimeoutId = setTimeout(deactivateImmunity, 3000); 
@@ -183,6 +194,11 @@ function activateImmunity() {
 function deactivateImmunity() {
     isImmune = false;
     player.classList.remove('immune');
+    
+    // 크기 원상복구
+    PLAYER_SIZE = 30;
+    player.style.width = PLAYER_SIZE + 'px';
+    player.style.height = PLAYER_SIZE + 'px';
 }
 
 function addEntity(type) {
