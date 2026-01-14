@@ -154,8 +154,8 @@ function startGame() {
         
         if (score > 0 && score % 100 === 0) {
             poops.forEach(p => {
-                p.vx *= 1.1;
-                p.vy *= 1.1;
+                p.vx *= 1.05;
+                p.vy *= 1.05;
             });
         }
         
@@ -261,16 +261,16 @@ function addEntity(type) {
 
     gameArea.appendChild(el);
 
-    let vx = (Math.random() - 0.5) * 8; 
-    let vy = (Math.random() - 0.5) * 8;
+    let vx = (Math.random() - 0.5) * 4; 
+    let vy = (Math.random() - 0.5) * 4;
     
     if (edge === 0 && vy < 0) vy = -vy;
     if (edge === 2 && vy > 0) vy = -vy;
     if (edge === 3 && vx < 0) vx = -vx;
     if (edge === 1 && vx > 0) vx = -vx;
     
-    if (Math.abs(vx) < 2) vx = vx < 0 ? -2 : 2;
-    if (Math.abs(vy) < 2) vy = vy < 0 ? -2 : 2;
+    if (Math.abs(vx) < 1) vx = vx < 0 ? -1 : 1;
+    if (Math.abs(vy) < 1) vy = vy < 0 ? -1 : 1;
 
     const entity = {
         element: el,
