@@ -5,26 +5,39 @@ const startBtn = document.getElementById('start-btn');
 const gameOverModal = document.getElementById('game-over-modal');
 const finalScoreDisplay = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
-const bgm = document.getElementById('bgm'); // 오디오 요소 가져오기
+const bgm = document.getElementById('bgm'); 
 
 let score = 0;
 let gameActive = false;
 let gameLoopId;
 let scoreIntervalId;
 let difficultyIntervalId;
-let hamburgerIntervalId; // 햄버거 생성 타이머
+let hamburgerIntervalId; 
 let immuneTimeoutId;
+
+// Cache Dimensions (Performance Optimization)
+let gameWidth = 0;
+let gameHeight = 0;
+
+function updateGameDimensions() {
+    gameWidth = gameArea.clientWidth; // border 제외한 내부 너비
+    gameHeight = gameArea.clientHeight;
+}
+window.addEventListener('resize', updateGameDimensions);
+// 초기화 시 한 번 호출
+updateGameDimensions();
+
 
 // Player State
 let playerX = 0;
 let playerY = 0;
-const PLAYER_SIZE = 40; // px (Updated to match CSS)
-const MOVE_SPEED = 5; // px per frame
-let isImmune = false; // 무적 상태 플래그
+const PLAYER_SIZE = 40; 
+const MOVE_SPEED = 5; 
+let isImmune = false; 
 
 // Entities
 let poops = []; 
-let hamburgers = []; // 햄버거 배열
+let hamburgers = []; 
 const POOP_SIZE = 24; 
 const HAMBURGER_SIZE = 30;
 
@@ -49,13 +62,13 @@ document.addEventListener('keyup', (e) => {
 // Mobile Joystick Controls
 const joystickContainer = document.getElementById('joystick-container');
 const joystickKnob = document.getElementById('joystick-knob');
-let joyX = 0; // -1 to 1
-let joyY = 0; // -1 to 1
+let joyX = 0; 
+let joyY = 0; 
 let joystickActive = false;
-const JOYSTICK_MAX_RADIUS = 35; // Maximum distance knob can move
+const JOYSTICK_MAX_RADIUS = 35; 
 
 joystickContainer.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // 스크롤 방지
+    e.preventDefault(); 
     joystickActive = true;
     updateJoystick(e.touches[0]);
 });
@@ -72,7 +85,7 @@ joystickContainer.addEventListener('touchend', (e) => {
     joystickActive = false;
     joyX = 0;
     joyY = 0;
-    joystickKnob.style.transform = `translate(-50%, -50%)`; // Reset knob position
+    joystickKnob.style.transform = `translate(-50%, -50%)`; 
 });
 
 function updateJoystick(touch) {
@@ -80,56 +93,49 @@ function updateJoystick(touch) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // 터치 위치와 중심 사이의 거리 계산
     let deltaX = touch.clientX - centerX;
     let deltaY = touch.clientY - centerY;
     
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     
-    // 최대 반경 내로 제한
     if (distance > JOYSTICK_MAX_RADIUS) {
         const angle = Math.atan2(deltaY, deltaX);
         deltaX = Math.cos(angle) * JOYSTICK_MAX_RADIUS;
         deltaY = Math.sin(angle) * JOYSTICK_MAX_RADIUS;
     }
     
-    // Knob 이동
     joystickKnob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
     
-    // Normalize values (-1 to 1) for movement
     joyX = deltaX / JOYSTICK_MAX_RADIUS;
     joyY = deltaY / JOYSTICK_MAX_RADIUS;
 }
 
 
 function startGame() {
+    updateGameDimensions(); // 시작 전 확실하게 치수 업데이트
     gameActive = true;
     score = 0;
     scoreDisplay.textContent = score;
     startBtn.style.display = 'none';
     gameOverModal.classList.add('hidden');
     
-    // BGM 시작
     bgm.play().catch(e => console.log("Audio play failed:", e));
 
-    // Reset Player
-    const rect = gameArea.getBoundingClientRect();
-    playerX = rect.width / 2 - PLAYER_SIZE / 2;
-    playerY = rect.height / 2 - PLAYER_SIZE / 2;
-    deactivateImmunity(); // 초기화
+    // Reset Player (Center logic adjusted for top/left: 0)
+    // CSS top:0, left:0. Center is (Width/2 - Size/2).
+    playerX = gameWidth / 2 - PLAYER_SIZE / 2;
+    playerY = gameHeight / 2 - PLAYER_SIZE / 2;
+    deactivateImmunity(); 
     updatePlayerPosition();
 
-    // Clear Entities
     document.querySelectorAll('.poop, .hamburger').forEach(el => el.remove());
     poops = [];
     hamburgers = [];
 
-    // Start with 10 Poops immediately for a chaotic start
     for(let i=0; i<10; i++) {
         addEntity('poop');
     }
 
-    // Start Loops
     gameLoopId = requestAnimationFrame(gameLoop);
     
     scoreIntervalId = setInterval(() => {
@@ -137,11 +143,9 @@ function startGame() {
         scoreDisplay.textContent = score;
     }, 100);
 
-    // Difficulty: Add Poop every 2s (Faster!)
     difficultyIntervalId = setInterval(() => {
         addEntity('poop');
         
-        // Every 10 seconds, increase general speed of ALL poops
         if (score > 0 && score % 100 === 0) {
             poops.forEach(p => {
                 p.vx *= 1.1;
@@ -153,9 +157,7 @@ function startGame() {
         setTimeout(() => scoreDisplay.style.color = '#333', 200);
     }, 2000); 
 
-    // Bonus: Add Hamburger every 8s (Slightly more frequent to compensate difficulty)
     hamburgerIntervalId = setInterval(() => {
-        // 화면에 햄버거가 너무 많지 않게 제한 (최대 2개)
         if (hamburgers.length < 2) {
             addEntity('hamburger');
         }
@@ -168,8 +170,9 @@ function resetGame() {
 }
 
 function clampPlayer() {
-    const maxWidth = gameArea.offsetWidth - PLAYER_SIZE;
-    const maxHeight = gameArea.offsetHeight - PLAYER_SIZE;
+    // Use cached dimensions
+    const maxWidth = gameWidth - PLAYER_SIZE;
+    const maxHeight = gameHeight - PLAYER_SIZE;
     
     if (playerX < 0) playerX = 0;
     if (playerX > maxWidth) playerX = maxWidth;
@@ -178,18 +181,17 @@ function clampPlayer() {
 }
 
 function updatePlayerPosition() {
-    player.style.left = playerX + 'px';
-    player.style.top = playerY + 'px';
+    // Optimization: Use transform for GPU acceleration
+    player.style.transform = `translate3d(${playerX}px, ${playerY}px, 0)`;
 }
 
 function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 기존 타이머가 있다면 취소 (시간 연장)
     if (immuneTimeoutId) clearTimeout(immuneTimeoutId);
     
-    immuneTimeoutId = setTimeout(deactivateImmunity, 3000); // 3초 지속
+    immuneTimeoutId = setTimeout(deactivateImmunity, 3000); 
 }
 
 function deactivateImmunity() {
@@ -203,33 +205,41 @@ function addEntity(type) {
     
     el.classList.add(type);
     el.textContent = type === 'poop' ? '💩' : '🍔';
-    gameArea.appendChild(el);
     
-    const areaWidth = gameArea.offsetWidth;
-    const areaHeight = gameArea.offsetHeight;
-    
-    // Spawn Logic (Same as before)
+    // Spawn Logic
     let startX, startY;
     const edge = Math.floor(Math.random() * 4); 
     
+    // Use cached dimensions
     switch(edge) {
         case 0: // Top
-            startX = Math.random() * (areaWidth - size);
+            startX = Math.random() * (gameWidth - size);
             startY = 0;
             break;
         case 1: // Right
-            startX = areaWidth - size;
-            startY = Math.random() * (areaHeight - size);
+            startX = gameWidth - size;
+            startY = Math.random() * (gameHeight - size);
             break;
         case 2: // Bottom
-            startX = Math.random() * (areaWidth - size);
-            startY = areaHeight - size;
+            startX = Math.random() * (gameWidth - size);
+            startY = gameHeight - size;
             break;
         case 3: // Left
             startX = 0;
-            startY = Math.random() * (areaHeight - size);
+            startY = Math.random() * (gameHeight - size);
             break;
     }
+
+    // Set Initial Position (Prevent flickering at 0,0)
+    if (type === 'poop') {
+        el.style.transform = `translate3d(${startX}px, ${startY}px, 0)`;
+    } else {
+        // Hamburger keeps left/top to avoid conflict with CSS animation transform
+        el.style.left = startX + 'px';
+        el.style.top = startY + 'px';
+    }
+
+    gameArea.appendChild(el);
 
     let vx = (Math.random() - 0.5) * 8; 
     let vy = (Math.random() - 0.5) * 8;
@@ -263,14 +273,12 @@ function gameLoop() {
     if (!gameActive) return;
 
     // 1. Move Player
-    // Keyboard Input
     if (keys.ArrowUp) playerY -= MOVE_SPEED;
     if (keys.ArrowDown) playerY += MOVE_SPEED;
     if (keys.ArrowLeft) playerX -= MOVE_SPEED;
     if (keys.ArrowRight) playerX += MOVE_SPEED;
     
     // Joystick Input (Mobile)
-    // 감도를 높이기 위해 MOVE_SPEED에 추가 계수(예: 1.2)를 곱함 (최적화)
     if (joyX !== 0 || joyY !== 0) {
         playerX += joyX * MOVE_SPEED * 1.2; 
         playerY += joyY * MOVE_SPEED * 1.2;
@@ -279,8 +287,9 @@ function gameLoop() {
     clampPlayer();
     updatePlayerPosition();
 
-    const maxWidth = gameArea.offsetWidth;
-    const maxHeight = gameArea.offsetHeight;
+    // Use cached dimensions
+    const maxWidth = gameWidth;
+    const maxHeight = gameHeight;
 
     // Helper function to move and bounce entities
     const processEntities = (arr) => {
@@ -296,21 +305,27 @@ function gameLoop() {
             if (e.y <= 0) { e.y = 0; e.vy *= -1; }
             else if (e.y >= maxHeight - e.size) { e.y = maxHeight - e.size; e.vy *= -1; }
 
-            e.element.style.left = e.x + 'px';
-            e.element.style.top = e.y + 'px';
+            // Render Update
+            if (e.type === 'poop') {
+                // Use transform for poops (Performance)
+                e.element.style.transform = `translate3d(${e.x}px, ${e.y}px, 0)`;
+            } else {
+                // Use left/top for hamburger (Compatibility with animation)
+                e.element.style.left = e.x + 'px';
+                e.element.style.top = e.y + 'px';
+            }
 
             // Collision
             if (checkCollision(e)) {
                 if (e.type === 'poop') {
                     if (!isImmune) {
                         gameOver();
-                        return true; // Game Over triggered
+                        return true; 
                     } else {
-                        // 무적 상태일 때 똥을 먹어치움 (제거)
+                        // Eat poop
                         e.element.remove();
                         arr.splice(i, 1);
                         i--;
-                        // 추가 점수 획득 효과 (선택 사항)
                         score += 10;
                         scoreDisplay.textContent = score;
                     }
@@ -325,7 +340,7 @@ function gameLoop() {
         return false;
     };
 
-    if (processEntities(poops)) return; // Stop loop if game over
+    if (processEntities(poops)) return; 
     processEntities(hamburgers);
 
     if (gameActive) {
@@ -334,10 +349,7 @@ function gameLoop() {
 }
 
 function checkCollision(entity) {
-    // 히트박스 보정 (이미지 안쪽으로 판정을 좁힘)
-    // 플레이어: 40px 크기에서 상하좌우 8px씩 안쪽으로 (여유롭게)
     const playerInset = 8; 
-    // 똥/햄버거: 크기에서 상하좌우 4px씩 안쪽으로
     const entityInset = 4; 
     
     const playerLeft = playerX + playerInset;
@@ -366,7 +378,6 @@ function gameOver() {
     clearTimeout(immuneTimeoutId);
     cancelAnimationFrame(gameLoopId);
     
-    // BGM 정지 및 되감기
     bgm.pause();
     bgm.currentTime = 0;
     

@@ -54,9 +54,8 @@ h1 {
 
 #player {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 40px;
     height: 40px;
     z-index: 10;
@@ -64,10 +63,13 @@ h1 {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    will-change: transform; /* 성능 최적화 */
 }
 
 .poop {
     position: absolute;
+    top: 0;
+    left: 0;
     font-size: 24px;
     width: 24px;
     height: 24px;
@@ -211,4 +213,5 @@ button:active {
     transform: translate(-50%, -50%);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     pointer-events: none; /* 터치 이벤트는 부모인 container가 받음 */
+    will-change: transform;
 }
