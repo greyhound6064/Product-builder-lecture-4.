@@ -3,6 +3,8 @@ const player = document.getElementById('player');
 const scoreDisplay = document.getElementById('score');
 const eatenCountDisplay = document.getElementById('eaten-count'); // 먹은 똥 표시 요소
 const startBtn = document.getElementById('start-btn');
+const descriptionModal = document.getElementById('description-modal');
+const realStartBtn = document.getElementById('real-start-btn');
 const gameOverModal = document.getElementById('game-over-modal');
 const finalScoreDisplay = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
@@ -52,7 +54,8 @@ const keys = {
 };
 
 // Event Listeners
-startBtn.addEventListener('click', startGame);
+startBtn.addEventListener('click', showDescription);
+realStartBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', resetGame);
 document.addEventListener('keydown', (e) => {
     if(keys.hasOwnProperty(e.key)) keys[e.key] = true;
@@ -101,7 +104,12 @@ document.addEventListener('touchend', () => {
 });
 
 
+function showDescription() {
+    descriptionModal.classList.remove('hidden');
+}
+
 function startGame() {
+    descriptionModal.classList.add('hidden');
     updateGameDimensions(); // 시작 전 확실하게 치수 업데이트
     gameActive = true;
     score = 0;
