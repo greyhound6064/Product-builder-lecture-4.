@@ -112,7 +112,8 @@
             const msg = document.getElementById('player-msg').value;
             // finalScore is updated in poop_game.js logic, but accessible via DOM textContent
             const score = parseInt(document.getElementById('final-score').textContent, 10);
-            
+            const eatenCount = parseInt(document.getElementById('eaten-count').textContent, 10) || 0; // 먹은 똥 개수 가져오기
+
             if (!name || !pw) {
                 alert("이름과 비밀번호를 입력해주세요!");
                 return;
@@ -124,6 +125,7 @@
                     password: pw,
                     message: msg,
                     score: score,
+                    eatenCount: eatenCount, // 저장
                     date: new Date()
                 });
                 alert("기록이 저장되었습니다!");
@@ -155,6 +157,7 @@
                     let rank = 1;
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
+                        const eaten = data.eatenCount || 0; // 기존 데이터 호환성 처리
                         const item = document.createElement('div');
                         item.style.borderBottom = "1px solid #eee";
                         item.style.padding = "10px 0";
@@ -162,7 +165,10 @@
                         item.style.justifyContent = "space-between";
                         item.innerHTML = `
                             <span><strong>${rank}위</strong> ${data.name}</span>
-                            <span>${data.score}점 <small style="color:#888;">(${data.message || '-'})</small></span>
+                            <div style="text-align: right;">
+                                <span>${data.score}점 <small style="color:#f59e0b;">(💩 ${eaten})</small></span><br>
+                                <small style="color:#888;">${data.message || '-'}</small>
+                            </div>
                         `;
                         rankingList.appendChild(item);
                         rank++;

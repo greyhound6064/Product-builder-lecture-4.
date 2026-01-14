@@ -161,7 +161,7 @@ function startGame() {
         
         scoreDisplay.style.color = 'red';
         setTimeout(() => scoreDisplay.style.color = '#333', 200);
-    }, 2000); 
+    }, 1000); 
 
     hamburgerIntervalId = setInterval(() => {
         if (hamburgers.length < 2) {
@@ -194,7 +194,13 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 크기 변화 없음 (기존 로직 제거)
+    // 햄버거 먹으면 1.5배 커짐 (30 * 1.5 = 45)
+    PLAYER_SIZE = 45;
+    player.style.width = '45px';
+    player.style.height = '45px';
+    
+    clampPlayer(); // 커진 크기에 맞춰 위치 보정
+    updatePlayerPosition();
 
     if (immuneTimeoutId) clearTimeout(immuneTimeoutId);
     
@@ -205,12 +211,13 @@ function deactivateImmunity() {
     isImmune = false;
     player.classList.remove('immune');
     
-    // 크기 원상복구 로직 제거 (원래 불필요)
-}
+    // 다시 원래 크기로 (30)
+    PLAYER_SIZE = 30;
+    player.style.width = '30px';
+    player.style.height = '30px';
 
-function deactivateImmunity() {
-    isImmune = false;
-    player.classList.remove('immune');
+    clampPlayer(); // 작아진 크기에 맞춰 위치 보정
+    updatePlayerPosition();
 }
 
 function addEntity(type) {
