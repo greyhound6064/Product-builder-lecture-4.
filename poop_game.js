@@ -5,6 +5,7 @@ const startBtn = document.getElementById('start-btn');
 const gameOverModal = document.getElementById('game-over-modal');
 const finalScoreDisplay = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
+const bgm = document.getElementById('bgm'); // 오디오 요소 가져오기
 
 let score = 0;
 let gameActive = false;
@@ -108,6 +109,9 @@ function startGame() {
     startBtn.style.display = 'none';
     gameOverModal.classList.add('hidden');
     
+    // BGM 시작
+    bgm.play().catch(e => console.log("Audio play failed:", e));
+
     // Reset Player
     const rect = gameArea.getBoundingClientRect();
     playerX = rect.width / 2 - PLAYER_SIZE / 2;
@@ -353,6 +357,10 @@ function gameOver() {
     clearInterval(hamburgerIntervalId);
     clearTimeout(immuneTimeoutId);
     cancelAnimationFrame(gameLoopId);
+    
+    // BGM 정지 및 되감기
+    bgm.pause();
+    bgm.currentTime = 0;
     
     finalScoreDisplay.textContent = score;
     gameOverModal.classList.remove('hidden');
