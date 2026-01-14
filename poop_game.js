@@ -39,7 +39,7 @@ let isImmune = false;
 let poops = []; 
 let hamburgers = []; 
 const POOP_SIZE = 18; // 기본 크기 18px
-const HAMBURGER_SIZE = 30;
+const HAMBURGER_SIZE = 18; // 똥 크기와 동일
 
 // Input State
 const keys = {
@@ -59,20 +59,21 @@ document.addEventListener('keyup', (e) => {
     if(keys.hasOwnProperty(e.key)) keys[e.key] = false;
 });
 
-// Mobile Touch Controls (Drag)
+// Mobile Touch Controls (Drag) - 화면 전체에서 인식하도록 document로 변경
 let touchStartX = 0;
 let touchStartY = 0;
 let touchActive = false;
 
-gameArea.addEventListener('touchstart', (e) => {
+document.addEventListener('touchstart', (e) => {
     if (!gameActive) return;
     touchActive = true;
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
-    e.preventDefault();
-});
+    // 게임 영역 내부 터치일 때만 preventDefault (버튼 클릭 허용 등을 위해 조건부로 하면 좋으나, 게임 중에는 전체 방지가 안전)
+    if(e.target.tagName !== 'BUTTON') e.preventDefault();
+}, { passive: false }); // passive: false 추가
 
-gameArea.addEventListener('touchmove', (e) => {
+document.addEventListener('touchmove', (e) => {
     if (!gameActive || !touchActive) return;
     e.preventDefault();
     
@@ -91,9 +92,9 @@ gameArea.addEventListener('touchmove', (e) => {
     
     clampPlayer();
     updatePlayerPosition();
-});
+}, { passive: false });
 
-gameArea.addEventListener('touchend', () => {
+document.addEventListener('touchend', () => {
     touchActive = false;
 });
 
@@ -181,8 +182,8 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 거대화 (3배)
-    PLAYER_SIZE = 90;
+    // 거대화 (2배)
+    PLAYER_SIZE = 60; // 30 * 2
     player.style.width = PLAYER_SIZE + 'px';
     player.style.height = PLAYER_SIZE + 'px';
 
