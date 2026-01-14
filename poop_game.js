@@ -328,14 +328,21 @@ function gameLoop() {
                 e.element.style.top = e.y + 'px';
             }
 
+const poopSound = document.getElementById('poop-sound');
+const yummySound = document.getElementById('yummy-sound');
+
+// ... (existing code)
+
             // Collision
             if (checkCollision(e)) {
                 if (e.type === 'poop') {
                     if (!isImmune) {
+                        playSound(poopSound); // Play poop sound on death
                         gameOver();
                         return true; 
                     } else {
                         // Eat poop
+                        playSound(poopSound); // Play poop sound on eat
                         e.element.remove();
                         arr.splice(i, 1);
                         i--;
@@ -345,6 +352,7 @@ function gameLoop() {
                         eatenCountDisplay.textContent = eatenCount;
                     }
                 } else if (e.type === 'hamburger') {
+                    playSound(yummySound); // Play yummy sound
                     activateImmunity();
                     e.element.remove();
                     arr.splice(i, 1);
@@ -360,6 +368,13 @@ function gameLoop() {
 
     if (gameActive) {
         gameLoopId = requestAnimationFrame(gameLoop);
+    }
+}
+
+function playSound(audioElement) {
+    if (audioElement) {
+        audioElement.currentTime = 0; // Reset sound to start
+        audioElement.play().catch(e => console.log("Sound play failed:", e));
     }
 }
 
