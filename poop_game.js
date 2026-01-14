@@ -35,7 +35,7 @@ updateGameDimensions();
 // Player State
 let playerX = 0;
 let playerY = 0;
-let PLAYER_SIZE = 9; // 캐릭터 크기 축소 (18 / 2 = 9)
+let PLAYER_SIZE = 18; // 캐릭터 크기 2배 확대 (9 -> 18)
 const MOVE_SPEED = 5; 
 let isImmune = false; 
 
@@ -122,13 +122,13 @@ function startGame() {
     bgm.play().catch(e => console.log("Audio play failed:", e));
 
     // Reset Player
-    playerX = gameWidth / 2 - 9 / 2; // PLAYER_SIZE(9) 반영
-    playerY = gameHeight / 2 - 9 / 2;
+    playerX = gameWidth / 2 - 18 / 2; // PLAYER_SIZE(18) 반영
+    playerY = gameHeight / 2 - 18 / 2;
     
     // 크기 및 상태 초기화
-    PLAYER_SIZE = 9;
-    player.style.width = '9px';
-    player.style.height = '9px';
+    PLAYER_SIZE = 18;
+    player.style.width = '18px';
+    player.style.height = '18px';
     
 deactivateImmunity(); 
 updatePlayerPosition();
@@ -167,7 +167,7 @@ updatePlayerPosition();
         if (hamburgers.length < 2) {
             addEntity('hamburger');
         }
-    }, 15000); // 햄버거 생성 간격 늦춤 (10초 -> 15초)
+    }, 10000); // 햄버거 생성 간격 원복
 }
 
 function resetGame() {
@@ -194,10 +194,10 @@ function activateImmunity() {
     isImmune = true;
     player.classList.add('immune');
     
-    // 햄버거 먹으면 1.5배 커짐 (9 * 1.5 = 13.5 -> 14)
-    PLAYER_SIZE = 14;
-    player.style.width = '14px';
-    player.style.height = '14px';
+    // 햄버거 먹으면 1.5배 커짐 (18 * 1.5 = 27)
+    PLAYER_SIZE = 27;
+    player.style.width = '27px';
+    player.style.height = '27px';
     
     clampPlayer(); // 커진 크기에 맞춰 위치 보정
     updatePlayerPosition();
@@ -211,10 +211,10 @@ function deactivateImmunity() {
     isImmune = false;
     player.classList.remove('immune');
     
-    // 다시 원래 크기로 (9)
-    PLAYER_SIZE = 9;
-    player.style.width = '9px';
-    player.style.height = '9px';
+    // 다시 원래 크기로 (18)
+    PLAYER_SIZE = 18;
+    player.style.width = '18px';
+    player.style.height = '18px';
 
     clampPlayer(); // 작아진 크기에 맞춰 위치 보정
     updatePlayerPosition();
@@ -261,8 +261,8 @@ function addEntity(type) {
 
     gameArea.appendChild(el);
 
-    // 속도 설정
-    let speedMultiplier = type === 'poop' ? 4 : 15; // 햄버거 속도 대폭 증가 (4 -> 15)
+    // 속도 설정 (햄버거 속도를 똥과 동일하게 4로 조정)
+    let speedMultiplier = 4; 
     
     let vx = (Math.random() - 0.5) * speedMultiplier; 
     let vy = (Math.random() - 0.5) * speedMultiplier;
@@ -272,8 +272,8 @@ function addEntity(type) {
     if (edge === 3 && vx < 0) vx = -vx;
     if (edge === 1 && vx > 0) vx = -vx;
     
-    // 최소 속도 보정
-    const minSpeed = type === 'poop' ? 1 : 5; // 햄버거 최소 속도 보정
+    // 최소 속도 보정 (햄버거 최소 속도를 똥과 동일하게 1로 조정)
+    const minSpeed = 1; 
     if (Math.abs(vx) < minSpeed) vx = vx < 0 ? -minSpeed : minSpeed;
     if (Math.abs(vy) < minSpeed) vy = vy < 0 ? -minSpeed : minSpeed;
 
@@ -332,10 +332,8 @@ function gameLoop() {
                 e.element.style.top = e.y + 'px';
             }
 
-const poopSound = document.getElementById('poop-sound');
-const yummySound = document.getElementById('yummy-sound');
-
-// ... (existing code)
+            const poopSound = document.getElementById('poop-sound');
+            const yummySound = document.getElementById('yummy-sound');
 
             // Collision
             if (checkCollision(e)) {

@@ -58,8 +58,8 @@ h1 {
     position: absolute;
     top: 0;
     left: 0;
-    width: 9px; /* 30px -> 9px (똥 18px의 절반) */
-    height: 9px;
+    width: 18px; /* 9px -> 18px (2배 확대) */
+    height: 18px;
     z-index: 10;
     background-image: url('명박.PNG');
     background-size: contain;
