@@ -45,41 +45,60 @@ document.addEventListener('keyup', (e) => {
     if(keys.hasOwnProperty(e.key)) keys[e.key] = false;
 });
 
-// Mobile Touch Controls
-let touchStartX = 0;
-let touchStartY = 0;
-let touchActive = false;
+// Mobile Joystick Controls
+const joystickContainer = document.getElementById('joystick-container');
+const joystickKnob = document.getElementById('joystick-knob');
+let joyX = 0; // -1 to 1
+let joyY = 0; // -1 to 1
+let joystickActive = false;
+const JOYSTICK_MAX_RADIUS = 35; // Maximum distance knob can move
 
-gameArea.addEventListener('touchstart', (e) => {
-    if (!gameActive) return;
-    touchActive = true;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+joystickContainer.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // 스크롤 방지
+    joystickActive = true;
+    updateJoystick(e.touches[0]);
 });
 
-gameArea.addEventListener('touchmove', (e) => {
-    if (!gameActive || !touchActive) return;
+joystickContainer.addEventListener('touchmove', (e) => {
     e.preventDefault();
-    
-    const touchX = e.touches[0].clientX;
-    const touchY = e.touches[0].clientY;
-    
-    const diffX = touchX - touchStartX;
-    const diffY = touchY - touchStartY;
-    
-    playerX += diffX * 0.2; 
-    playerY += diffY * 0.2;
-    
-    touchStartX = touchX;
-    touchStartY = touchY;
-    
-    clampPlayer();
-    updatePlayerPosition();
+    if (joystickActive) {
+        updateJoystick(e.touches[0]);
+    }
 });
 
-gameArea.addEventListener('touchend', () => {
-    touchActive = false;
+joystickContainer.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    joystickActive = false;
+    joyX = 0;
+    joyY = 0;
+    joystickKnob.style.transform = `translate(-50%, -50%)`; // Reset knob position
 });
+
+function updateJoystick(touch) {
+    const rect = joystickContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // 터치 위치와 중심 사이의 거리 계산
+    let deltaX = touch.clientX - centerX;
+    let deltaY = touch.clientY - centerY;
+    
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    // 최대 반경 내로 제한
+    if (distance > JOYSTICK_MAX_RADIUS) {
+        const angle = Math.atan2(deltaY, deltaX);
+        deltaX = Math.cos(angle) * JOYSTICK_MAX_RADIUS;
+        deltaY = Math.sin(angle) * JOYSTICK_MAX_RADIUS;
+    }
+    
+    // Knob 이동
+    joystickKnob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+    
+    // Normalize values (-1 to 1) for movement
+    joyX = deltaX / JOYSTICK_MAX_RADIUS;
+    joyY = deltaY / JOYSTICK_MAX_RADIUS;
+}
 
 
 function startGame() {
@@ -240,11 +259,19 @@ function gameLoop() {
     if (!gameActive) return;
 
     // 1. Move Player
+    // Keyboard Input
     if (keys.ArrowUp) playerY -= MOVE_SPEED;
     if (keys.ArrowDown) playerY += MOVE_SPEED;
     if (keys.ArrowLeft) playerX -= MOVE_SPEED;
     if (keys.ArrowRight) playerX += MOVE_SPEED;
     
+    // Joystick Input (Mobile)
+    // 감도를 높이기 위해 MOVE_SPEED에 추가 계수(예: 1.5 ~ 2.0)를 곱함
+    if (joyX !== 0 || joyY !== 0) {
+        playerX += joyX * MOVE_SPEED * 2.0; 
+        playerY += joyY * MOVE_SPEED * 2.0;
+    }
+
     clampPlayer();
     updatePlayerPosition();
 

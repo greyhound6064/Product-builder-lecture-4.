@@ -16,7 +16,7 @@
         </div>
         <div class="controls">
             <button id="start-btn">게임 시작</button>
-            <p class="mobile-controls">상하좌우로 움직여서 똥을 피하세요!<br>(PC: 방향키 / 모바일: 화면 드래그)</p>
+            <p class="mobile-controls">PC: 방향키 / 모바일: 오른쪽 하단 조이스틱</p>
         </div>
         
         <!-- Game Over Modal -->
@@ -26,6 +26,11 @@
                 <p>최종 점수: <span id="final-score">0</span></p>
                 <button id="restart-btn">다시 하기</button>
             </div>
+        </div>
+
+        <!-- Virtual Joystick -->
+        <div id="joystick-container">
+            <div id="joystick-knob"></div>
         </div>
     </div>
 
