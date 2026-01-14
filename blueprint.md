@@ -1,40 +1,36 @@
-# Carrot and Stick Game
+# Poop Dodging Game (똥 피하기 게임)
 
 ## Overview
-This is a web application game where the user gains or loses "LIFE" points by receiving "comfort" (Carrot) or "insults" (Stick). It's a simple, interactive game designed to simulate the ups and downs of motivation.
+This is a web-based arcade game where the player controls a character to dodge falling obstacles ("poop") and collect items ("hamburgers") for invincibility. The game features a scoring system based on survival time and collected items, and a global leaderboard powered by Firebase.
 
 ## Design and Features
 
 ### Style and Design
-*   **Theme:** Clean, modern interface with a focus on typography and clear feedback.
-*   **Colors:** Uses distinctive colors for actions (Green for Comfort, Red for Insult/Stick).
-*   **Animation:** Features floating text animations for score changes (+1, -1).
-*   **Responsiveness:** Fully responsive layout suitable for mobile and desktop.
+*   **Theme:** Fun and casual pixel-art style (using emoji and simple graphics).
+*   **Colors:** Blue/Sky-blue background palette (`#f0f9ff`, `#0ea5e9`) with distinct entity colors.
+*   **Responsiveness:** Mobile-first design. Supports touch drag on mobile and arrow keys on PC.
+*   **Modals:** Full-screen overlays for "Game Over" and "Ranking" screens.
 
 ### Features
-*   **Life System:** Starts with 10 LIFE. Game Over at 0, Win at >20.
-*   **Interaction:**
-    *   **Comfort Button:** Decreases LIFE by 1, shows a comforting message.
-    *   **Insult Button:** Increases LIFE by 1, shows an insulting (motivating) message.
-*   **Authentication (Google Sign-In):**
-    *   Users can sign in with their Google account.
-    *   Identifies the author of comments automatically.
-*   **Comment System (Firestore):** Users can leave comments which are stored in a real-time database.
-    *   **Real-time Updates:** Comments appear instantly for all users.
-    *   **Ownership:** Only the authenticated author can delete their own comments.
-    *   **No Passwords:** Security is handled via user unique IDs (UID).
+*   **Core Gameplay:**
+    *   **Player:** Controlled via arrow keys or touch drag.
+    *   **Obstacles (Poop 💩):** Bounce around the screen. Speed and quantity increase over time.
+    *   **Items (Hamburger 🍔):** Grant temporary invincibility (immune to poop) and allow eating poop for extra points.
+    *   **Scoring:** +1 per tick, +10 for eating poop while invincible.
+*   **Game Over:** Triggers when hitting a poop without invincibility. Shows final score.
+*   **Leaderboard (Ranking):**
+    *   Submit score with Name, Password, and a short Message.
+    *   View top 10 scores.
+    *   Powered by Firebase Firestore.
 
-## Current Task: Implement Google Sign-In
+## Current Task: Improve Ranking View Visibility
 
-*   **Objective:** Integrate Firebase Authentication to manage user identity and secure comment ownership.
-*   **Steps:**
-    1.  **HTML (`index.html`):** 
-        *   Add Login/Logout buttons and a User Profile display area.
-        *   Remove "Author" and "Password" fields from the comment form (data comes from Auth).
-    2.  **CSS (`style.css`):** Style the new auth UI elements.
-    3.  **JavaScript (`main.js`):** 
-        *   Initialize Firebase Auth.
-        *   Implement `signInWithPopup` and `signOut`.
-        *   Use `onAuthStateChanged` to manage UI state (show/hide form, toggle buttons).
-        *   Update comment saving to include User ID (`uid`).
-        *   Update comment rendering to show "Delete" button *only* if `current_user.uid == comment.uid`.
+*   **Objective:** Make the ranking view (Leaderboard) more visible and accessible.
+*   **Changes:**
+    *   **UI (`poop_style.css`):** Updated `#ranking-modal` style to be a full-screen fixed overlay with a dark backdrop (`rgba(0,0,0,0.5)`), matching the Game Over modal's design. This ensures it appears on top of the game area instead of below it.
+    *   **Interaction:** "View Ranking" button opens this modal. "Close" button hides it.
+
+## Technical Stack
+*   **Frontend:** HTML5, CSS3, Vanilla JavaScript (ES Modules).
+*   **Backend:** Firebase (Firestore for database, Analytics).
+*   **Assets:** Local images (`412.PNG`) and audio (`Overboard...mp3`).

@@ -148,8 +148,8 @@ button:active {
     display: none !important;
 }
 
-#game-over-modal {
-    position: absolute;
+#game-over-modal, #ranking-modal {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -168,6 +168,16 @@ button:active {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     text-align: center;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-height: 85vh; /* 모바일 키보드 등 고려하여 높이 제한 */
+    overflow-y: auto; /* 내용이 넘치면 스크롤 */
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 20px;
+        width: 95% !important; /* 인라인 스타일 덮어쓰기 위해 */
+    }
 }
 
 .modal-content h2 {

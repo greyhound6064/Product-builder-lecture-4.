@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당근과 채찍 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+    <!-- User Profile / Auth Section -->
+    <div id="authContainer">
+        <div id="userProfile" style="display: none;">
+            <img id="userPhoto" src="" alt="Profile Photo">
+            <span id="userName"></span>
+            <button id="logoutButton" class="auth-btn">로그아웃</button>
+        </div>
+    </div>
+
+    <h1>당근과 채찍 게임</h1>
+    <div id="lifeContainer">
+        <div id="lifeDisplay">LIFE: <span id="lifeValue">10</span></div>
+    </div>
+    <div class="button-container">
+        <button id="startGameButton" class="start-game">게임 시작</button>
+        <button id="comfortButton" class="comfort" disabled>위로받기</button>
+        <button id="insultButton" class="insult" disabled>모욕 받기</button>
+    </div>
+    <div id="messageDisplay">게임 시작 버튼을 눌러주세요!</div>
+    <p id="gameExplanation">
+        게임 목표: LIFE 점수가 20점을 초과하면 성공! 0점 이하가 되면 사망! 게임 오버.
+    </p>
+
+    <!-- Comment Section -->
+    <div id="commentSection">
+        <h3>댓글</h3>
+        
+        <!-- Logged In: Show Form -->
+        <form class="comment-form" id="commentForm" style="display: none;">
+            <input type="text" id="commentInput" placeholder="응원의 한마디 또는 따끔한 충고를 남겨주세요..." required>
+            <button type="submit">등록</button>
+        </form>
+
+        <!-- Logged Out: Show Message with Login Button -->
+        <div id="loginRequestMsg" style="text-align: center; padding: 20px; color: #666; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span>댓글을 작성하려면 로그인이 필요합니다.</span>
+            <button id="loginButton" class="auth-btn">Google 로그인</button>
+        </div>
+
+        <ul id="commentList">
+            <!-- Comments will be loaded here -->
+        </ul>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>로그인 중...</p>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>1
