@@ -1,36 +1,28 @@
-# Poop Dodging Game (똥 피하기 게임)
+# Blueprint
 
 ## Overview
-This is a web-based arcade game where the player controls a character to dodge falling obstacles ("poop") and collect items ("hamburgers") for invincibility. The game features a scoring system based on survival time and collected items, and a global leaderboard powered by Firebase.
+This blueprint outlines the integration of Google Analytics into the web project to track user data.
 
-## Design and Features
+## Project Outline
+- **File:** `index.html`
+  - **Description:** The main entry point of the web application, containing the game interface, modals, and Firebase integration.
+  - **Changes:** Google Analytics tracking code has been added to the `<head>` section.
+- **File:** `poop_style.css`
+  - **Description:** Stylesheet for the "poop game."
+- **File:** `poop_game.js`
+  - **Description:** JavaScript logic for the "poop game," including game mechanics, scoring, and interaction with Firebase for ranking.
+- **File:** `carrot_game.html`
+  - **Description:** Another HTML file in the project, which the user explicitly stated does not require Google Analytics integration.
+- **Firebase Integration:** The project utilizes Firebase for a ranking system, including Firestore for data storage and Firebase Analytics (though the provided GA snippet is separate).
 
-### Style and Design
-*   **Theme:** Fun and casual pixel-art style (using emoji and simple graphics).
-*   **Colors:** Blue/Sky-blue background palette (`#f0f9ff`, `#0ea5e9`) with distinct entity colors.
-*   **Responsiveness:** Mobile-first design. Supports touch drag on mobile and arrow keys on PC.
-*   **Modals:** Full-screen overlays for "Game Over" and "Ranking" screens.
+## Current Requested Change Plan and Steps
 
-### Features
-*   **Core Gameplay:**
-    *   **Player:** Controlled via arrow keys or touch drag.
-    *   **Obstacles (Poop 💩):** Bounce around the screen. Speed and quantity increase over time.
-    *   **Items (Hamburger 🍔):** Grant temporary invincibility (immune to poop) and allow eating poop for extra points.
-    *   **Scoring:** +1 per tick, +10 for eating poop while invincible.
-*   **Game Over:** Triggers when hitting a poop without invincibility. Shows final score.
-*   **Leaderboard (Ranking):**
-    *   Submit score with Name, Password, and a short Message.
-    *   View top 10 scores.
-    *   Powered by Firebase Firestore.
+### Plan
+The user requested to integrate Google Analytics for user data tracking, providing the specific gtag.js script to be used.
 
-## Current Task: Improve Ranking View Visibility
-
-*   **Objective:** Make the ranking view (Leaderboard) more visible and accessible.
-*   **Changes:**
-    *   **UI (`poop_style.css`):** Updated `#ranking-modal` style to be a full-screen fixed overlay with a dark backdrop (`rgba(0,0,0,0.5)`), matching the Game Over modal's design. This ensures it appears on top of the game area instead of below it.
-    *   **Interaction:** "View Ranking" button opens this modal. "Close" button hides it.
-
-## Technical Stack
-*   **Frontend:** HTML5, CSS3, Vanilla JavaScript (ES Modules).
-*   **Backend:** Firebase (Firestore for database, Analytics).
-*   **Assets:** Local images (`412.PNG`) and audio (`Overboard...mp3`).
+### Steps
+1. **Read `index.html`:** Identified `index.html` as the primary file for integration.
+2. **Insert Google Analytics code:** Added the provided Google Analytics `gtag.js` script to the `<head>` section of `index.html`.
+3. **Confirm with user:** Asked the user about other HTML files (`carrot_game.html`) for potential integration.
+4. **User Confirmation:** The user explicitly stated that `carrot_game.html` does not need the Google Analytics integration.
+5. **Document changes:** Created `blueprint.md` to document the implemented changes and project structure.
