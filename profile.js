@@ -4,12 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
     // Upload functionality
+    const uploadIcon = document.querySelector('.empty-icon');
     const fileInput = document.getElementById('file-upload');
     const newPostForm = document.querySelector('.new-post-form');
     const emptyContent = document.querySelector('.empty-content');
     const imagePreview = document.getElementById('image-preview');
     const postCaption = document.getElementById('post-caption');
     const postButton = document.getElementById('post-button');
+    const uploadButton = document.querySelector('.share-first-photo-btn');
     let downloadURL = '';
 
     if(uploadButton) {
