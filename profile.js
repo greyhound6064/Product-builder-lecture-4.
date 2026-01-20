@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const file = event.target.files[0];
             if (file) {
                 // Show the new post form and hide the empty content message
-                newPostForm.style.display = 'block';
+                newPostForm.style.display = 'flex';
                 emptyContent.style.display = 'none';
 
                 // Show a preview of the selected image
