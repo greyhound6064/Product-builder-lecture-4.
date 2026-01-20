@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메시지 • What's your vibe?</title>
+    <link rel="stylesheet" href="style.css"> <!-- 전체 공통 스타일 -->
+    <link rel="stylesheet" href="messages.css"> <!-- 메시지 전용 스타일 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 좌측 사이드바 -->
+        <aside class="left-sidebar">
+            <div class="logo">
+                <h1>What's your vibe?</h1>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="profile.html"><i data-lucide="user-circle"></i> <span>내 프로필</span></a></li>
+                    <li><a href="feed.html"><i data-lucide="home"></i> <span>피드</span></a></li>
+                    <li><a href="explore.html"><i data-lucide="compass"></i> <span>탐색</span></a></li>
+                    <li><a href="messages.html"><i data-lucide="message-circle"></i> <span>메시지</span></a></li>
+                    <li><a href="board.html"><i data-lucide="clipboard-list"></i> <span>자유 게시판</span></a></li>
+                    <li><a href="#" onclick="signOut()"><i data-lucide="log-out"></i> <span>로그아웃</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메시지 메인 콘텐츠 -->
+        <main class="messages-main">
+            <div class="messages-container">
+                <aside class="conversations-list">
+                    <header class="list-header">
+                        <h2>메시지</h2>
+                        <button class="new-message-btn"><i data-lucide="pen-square"></i></button>
+                    </header>
+                    <div class="conversation-items">
+                        <!-- 예시 대화 아이템 -->
+                        <div class="conversation-item active">
+                            <img src="https://via.placeholder.com/56" alt="user profile">
+                            <div class="item-details">
+                                <span class="item-username">user_1</span>
+                                <p class="item-last-message">네, 확인했습니다. 오늘 저녁에 보내드릴게요.</p>
+                            </div>
+                            <span class="item-time">3분 전</span>
+                        </div>
+                        <div class="conversation-item">
+                            <img src="https://via.placeholder.com/56" alt="user profile">
+                            <div class="item-details">
+                                <span class="item-username">project_team</span>
+                                <p class="item-last-message">새로운 디자인 시안 나왔습니다.</p>
+                            </div>
+                             <span class="item-time">2시간 전</span>
+                        </div>
+                        <!-- ... 추가 대화들 -->
+                    </div>
+                </aside>
+
+                <section class="chat-window">
+                    <header class="chat-header">
+                        <div class="chat-user-info">
+                            <img src="https://via.placeholder.com/40" alt="user profile">
+                            <span class="chat-username">user_1</span>
+                        </div>
+                        <div class="chat-actions">
+                            <button><i data-lucide="phone"></i></button>
+                            <button><i data-lucide="video"></i></button>
+                            <button><i data-lucide="info"></i></button>
+                        </div>
+                    </header>
+                    <div class="chat-messages">
+                        <!-- 메시지들이 여기에 표시됩니다 -->
+                        <div class="message received">
+                            <p>안녕하세요, 요청하신 자료 보내드립니다.</p>
+                            <span>오후 2:30</span>
+                        </div>
+                        <div class="message sent">
+                            <p>네, 확인했습니다. 오늘 저녁에 보내드릴게요.</p>
+                            <span>오후 2:31</span>
+                        </div>
+                    </div>
+                    <footer class="chat-input-area">
+                        <button class="emoji-btn"><i data-lucide="smile"></i></button>
+                        <input type="text" placeholder="메시지를 입력하세요...">
+                        <button class="send-btn"><i data-lucide="send"></i></button>
+                    </footer>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+    </script>
+    <script src="auth.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's your vibe?</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 좌측 사이드바 (내비게이션) -->
+        <aside class="left-sidebar">
+            <div class="logo">
+                <!-- 로고 이미지를 나중에 추가하거나 텍스트 로고 사용 -->
+                <h1>What's your vibe?</h1>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="profile.html"><i data-lucide="user-circle"></i> <span>내 프로필</span></a></li>
+                    <li><a href="#"><i data-lucide="home"></i> <span>피드</span></a></li>
+                    <li><a href="explore.html"><i data-lucide="compass"></i> <span>탐색</span></a></li>
+                    <li><a href="messages.html"><i data-lucide="message-circle"></i> <span>메시지</span></a></li>
+                    <li><a href="board.html"><i data-lucide="clipboard-list"></i> <span>자유 게시판</span></a></li>
+                    <li><a href="#" onclick="signOut()"><i data-lucide="log-out"></i> <span>로그아웃</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 중앙 컬럼 (메인 피드) -->
+        <main class="main-feed">
+            <div class="stories-container">
+                <!-- 스토리 아이템들이 여기에 동적으로 추가됩니다. -->
+                <div class="story-item">
+                    <img src="https://via.placeholder.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+                 <div class="story-item">
+                    <img src="https://via.placeholder.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+                 <div class="story-item">
+                    <img src="https://via.placeholder.com.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+                 <div class="story-item">
+                    <img src="https://via.placeholder.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+                 <div class="story-item">
+                    <img src="https://via.placeholder.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+                 <div class="story-item">
+                    <img src="https://via.placeholder.com/56" alt="story">
+                    <span>user_name</span>
+                </div>
+            </div>
+
+            <div class="feed-list">
+                <!-- 피드 게시물 카드 -->
+                <article class="feed-card">
+                    <header class="card-header">
+                        <div class="user-info">
+                            <img src="https://via.placeholder.com/32" alt="profile" class="profile-pic">
+                            <span class="username">user_id</span>
+                            <span class="post-time">3주</span>
+                        </div>
+                        <button class="more-options-btn"><i data-lucide="more-horizontal"></i></button>
+                    </header>
+                    <div class="card-media">
+                        <img src="https://via.placeholder.com/468x585" alt="post image">
+                    </div>
+                    <div class="card-actions">
+                        <div class="main-actions">
+                            <button><i data-lucide="heart"></i></button>
+                            <button><i data-lucide="message-circle"></i></button>
+                            <button><i data-lucide="send"></i></button>
+                        </div>
+                        <button class="bookmark-btn"><i data-lucide="bookmark"></i></button>
+                    </div>
+                    <div class="card-text-content">
+                        <p class="like-count">좋아요 1,234개</p>
+                        <p class="post-caption">
+                            <span>
+                                <span class="username">user_id</span>
+                                여기는 아주 긴 게시물 내용입니다. 이 내용은 여러 줄에 걸쳐 표시될 것이며, 초기에는 일부만 보이고 '더 보기' 버튼이 나타납니다. 버튼을 클릭하면 전체 내용이 펼쳐지면서 버튼은 사라집니다. 이렇게 긴 텍스트를 사용하는 것은 -webkit-line-clamp 기능이 올바르게 작동하는지 확인하기 위함입니다.
+                            </span>
+                            <button class="more-btn">더 보기</button>
+                        </p>
+                        <a href="#" class="view-comments-link">댓글 42개 모두 보기</a>
+                    </div>
+                </article>
+                <!-- 추가 게시물들 -->
+            </div>
+        </main>
+
+        <!-- 우측 사이드바 (추천) -->
+        <aside class="right-sidebar">
+            <div class="current-user-profile">
+                 <img src="https://via.placeholder.com/56" alt="My profile">
+                 <div class="user-details">
+                     <span class="username">my_user_id</span>
+                     <span class="full-name">My Name</span>
+                 </div>
+                 <button class="switch-btn">전환</button>
+            </div>
+            <div class="recommendations">
+                <div class="rec-header">
+                    <span>회원님을 위한 추천</span>
+                    <a href="#">모두 보기</a>
+                </div>
+                <ul>
+                    <li>
+                        <img src="https://via.placeholder.com/32" alt="user profile">
+                        <div class="rec-user-details">
+                            <span class="username">recommended_user</span>
+                            <span class="follower-info">회원님을 팔로우합니다</span>
+                        </div>
+                        <button class="follow-btn">팔로우</button>
+                    </li>
+                    <!-- 추가 추천들 -->
+                </ul>
+            </div>
+            <footer class="page-footer">
+                <p>&copy; 2026 Devstagram from Vibecoding</p>
+                <!-- 푸터 링크들 -->
+            </footer>
+        </aside>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+    </script>
+    <script src="auth.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

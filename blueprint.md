@@ -1,28 +1,78 @@
-# Blueprint
+# 프로젝트 청사진: What's your vibe?
 
-## Overview
-This blueprint outlines the integration of Google Analytics and MS Clarity into the web project to track user data.
+## 개요
 
-## Project Outline
-- **File:** `index.html`
-  - **Description:** The main entry point of the web application, containing the game interface, modals, and Firebase integration.
-  - **Changes:** 
-    - Google Analytics tracking code has been added to the `<head>` section.
-    - MS Clarity tracking code has been added to the `<head>` section.
-- **File:** `poop_style.css`
-  - **Description:** Stylesheet for the "poop game."
-- **File:** `poop_game.js`
-  - **Description:** JavaScript logic for the "poop game," including game mechanics, scoring, and interaction with Firebase for ranking.
-- **File:** `carrot_game.html`
-  - **Description:** Another HTML file in the project, which the user explicitly stated does not require tracking integrations.
-- **Firebase Integration:** The project utilizes Firebase for a ranking system, including Firestore for data storage and Firebase Analytics (though the provided GA snippet is separate).
+"What's your vibe?"는 사용자들이 자신의 "바이브 코딩" 결과물을 공유하고 다른 사용자들과 소통할 수 있는 소셜 미디어 플랫폼입니다. 이 문서는 프로젝트의 현재 상태, 디자인 가이드라인, 그리고 향후 개발 계획을 담고 있습니다.
 
-## Current Requested Change Plan and Steps
+## 현재 구현된 기능
 
-### Plan
-The user requested to integrate MS Clarity for user behavior analytics, providing the specific script to be used.
+### 1. 프로필 (`profile.html`)
 
-### Steps
-1. **Read `index.html`:** Identified `index.html` as the primary file for integration.
-2. **Insert MS Clarity code:** Added the provided MS Clarity script to the `<head>` section of `index.html`, after the Google Analytics script.
-3. **Document changes:** Updated `blueprint.md` to document the implemented changes.
+- **기능:**
+    - 사용자 정보(ID, 이름), 통계(게시물, 팔로워, 팔로우 수) 표시
+    - 프로필 편집, 보관된 스토리 보기 버튼
+    - 콘텐츠 탭 (게시물, 저장됨, 태그됨)
+    - 새로운 콘텐츠 업로드 기능 (현재는 UI만 구현)
+- **디자인:**
+    - 중앙 정렬된 프로필 헤더와 콘텐츠 영역
+    - `profile.css`를 통해 전용 스타일 적용
+
+### 2. 피드 (`index.html`)
+
+- **기능:**
+    - 다른 사용자들의 게시물을 보여주는 메인 피드
+    - 스토리 기능 (UI)
+    - 게시물에 대한 좋아요, 댓글, 공유, 북마크 기능 (UI)
+- **디자인:**
+    - 인스타그램과 유사한 3단 레이아웃 (좌측 내비게이션, 중앙 피드, 우측 추천)
+    - 반응형 디자인 적용
+
+### 3. 탐색 (`explore.html`)
+
+- **기능:**
+    - 게시물 검색 기능
+    - 그리드 레이아웃으로 인기 게시물 표시
+- **디자인:**
+    - `explore.css`를 통해 그리드 레이아웃 및 오버레이 효과 적용
+
+### 4. 자유 게시판 (`board.html`)
+
+- **기능:**
+    - 표준적인 테이블 형태의 게시판
+    - 게시물 검색, 글쓰기 기능
+    - 페이지네이션
+- **디자인:**
+    - `board.css`를 통해 테이블 스타일 및 페이지네이션 디자인 적용
+
+## 디자인 가이드라인
+
+- **레이아웃:** 전반적으로 3단 레이아웃(좌측 내비게이션, 중앙 콘텐츠, 우측 보조 패널)을 사용하며, 모바일에서는 2단(축소된 내비게이션, 중앙 콘텐츠)으로 변경됩니다.
+- **색상:** `style.css`에 정의된 변수를 따릅니다.
+    - `--background-color: #FFFFFF`
+    - `--primary-text-color: #262626`
+    - `--link-color: #0095f6`
+- **아이콘:** [Lucide Icons](https://lucide.dev/)를 사용합니다.
+- **폰트:** 시스템 기본 UI 폰트를 사용합니다.
+
+## 향후 개발 계획
+
+### 1. 메시지 탭 구현
+
+- **목표:** 사용자 간의 1:1 메시지 기능을 구현합니다.
+- **세부 작업:**
+    1.  `messages.html` 파일 생성 (대화 목록, 채팅 창 레이아웃)
+    2.  `messages.css` 파일 생성 (메시지 UI 스타일)
+    3.  모든 페이지의 내비게이션에 "메시지" 링크 추가
+
+### 2. 기능 고도화
+
+- **프로필:** 실제 이미지 업로드 및 표시 기능 구현
+- **피드:** '더 보기' 기능, 댓글 창 구현
+- **탐색:** 실제 검색 결과 연동
+- **게시판:** 글쓰기, 읽기 페이지 구현
+
+### 3. 백엔드 연동
+
+- 사용자 인증 (로그인, 회원가입)
+- 데이터베이스 연동 (게시물, 댓글, 메시지 등)
+- API 서버 구축

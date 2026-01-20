@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자유 게시판 • What's your vibe?</title>
+    <link rel="stylesheet" href="style.css"> <!-- 전체 공통 스타일 -->
+    <link rel="stylesheet" href="board.css"> <!-- 게시판 전용 스타일 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 좌측 사이드바 -->
+        <aside class="left-sidebar">
+            <div class="logo">
+                <h1>What's your vibe?</h1>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="profile.html"><i data-lucide="user-circle"></i> <span>내 프로필</span></a></li>
+                    <li><a href="feed.html"><i data-lucide="home"></i> <span>피드</span></a></li>
+                    <li><a href="explore.html"><i data-lucide="compass"></i> <span>탐색</span></a></li>
+                    <li><a href="messages.html"><i data-lucide="message-circle"></i> <span>메시지</span></a></li>
+                    <li><a href="board.html"><i data-lucide="clipboard-list"></i> <span>자유 게시판</span></a></li>
+                    <li><a href="#" onclick="signOut()"><i data-lucide="log-out"></i> <span>로그아웃</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 게시판 메인 콘텐츠 -->
+        <main class="board-main">
+            <header class="board-header">
+                <h1>자유 게시판</h1>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" placeholder="게시물 검색...">
+                        <button class="search-btn"><i data-lucide="search"></i></button>
+                    </div>
+                    <button class="write-post-btn">
+                        <i data-lucide="pen-square"></i>
+                        <span>글쓰기</span>
+                    </button>
+                </div>
+            </header>
+
+            <table class="post-table">
+                <thead>
+                    <tr>
+                        <th class="col-num">번호</th>
+                        <th class="col-title">제목</th>
+                        <th class="col-author">작성자</th>
+                        <th class="col-date">작성일</th>
+                        <th class="col-views">조회</th>
+                        <th class="col-likes">추천</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 예시 게시물 데이터 -->
+                    <tr>
+                        <td>10</td>
+                        <td class="post-title">
+                            <a href="#">Gemini AI 사용 후기입니다.</a>
+                            <span class="comment-count">[3]</span>
+                        </td>
+                        <td>developer123</td>
+                        <td>2026.01.19</td>
+                        <td>152</td>
+                        <td>12</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td class="post-title">
+                            <a href="#">새로운 프로젝트 팀원 구합니다!</a>
+                        </td>
+                        <td>coder_master</td>
+                        <td>2026.01.18</td>
+                        <td>98</td>
+                        <td>5</td>
+                    </tr>
+                    <!-- ... 추가 게시물들 -->
+                </tbody>
+            </table>
+
+            <nav class="pagination">
+                <a href="#" class="page-arrow prev">&lt; 이전</a>
+                <a href="#" class="page-num active">1</a>
+                <a href="#" class="page-num">2</a>
+                <a href="#" class="page-num">3</a>
+                <a href="#" class="page-num">4</a>
+                <a href="#" class="page-num">5</a>
+                <a href="#" class="page-arrow next">다음 &gt;</a>
+            </nav>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+    </script>
+    <script src="auth.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

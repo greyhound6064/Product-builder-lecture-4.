@@ -1,0 +1,218 @@
+/* --- 프로필 페이지 전용 스타일 --- */
+
+/* --- 메인 레이아웃 --- */
+.profile-main {
+    grid-column: 2 / 3;
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    box-sizing: border-box;
+}
+
+/* --- 프로필 헤더 --- */
+.profile-header {
+    display: flex;
+    margin-bottom: 44px;
+}
+
+.profile-image {
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 30px;
+}
+
+.profile-image .image-wrapper {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #EFEFEF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-image .image-wrapper i {
+    width: 60px;
+    height: 60px;
+    color: #C7C7C7;
+}
+
+.profile-info {
+    flex-basis: 66%;
+}
+
+.profile-info .info-row-1 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-info .user-id {
+    font-size: 1.75rem;
+    font-weight: 300;
+    margin-right: 20px;
+}
+
+.profile-info .settings-btn i {
+    width: 24px;
+    height: 24px;
+}
+
+.profile-info .info-row-2 {
+    margin-bottom: 20px;
+}
+
+.profile-info .user-name {
+    font-weight: 600;
+}
+
+.profile-info .stats-list {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 20px;
+}
+
+.profile-info .stats-list span {
+    font-weight: 600;
+}
+
+.profile-info .button-row {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-profile-btn, .view-archive-btn {
+    background-color: #EFEFEF;
+    color: var(--primary-text-color);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+
+
+/* --- 콘텐츠 탭 --- */
+.content-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--secondary-text-color);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.tab-item.active {
+    color: var(--primary-text-color);
+    border-top: 1px solid var(--primary-text-color);
+    margin-top: -16px; /* 선을 위로 올림 */
+    padding-top: 15px;
+}
+
+.tab-item i {
+    width: 16px;
+    height: 16px;
+}
+
+/* --- 콘텐츠 영역 (게시물 없음) --- */
+.content-area {
+    border-top: 1px solid var(--border-color);
+    margin-top: -1px; /* 탭의 활성 선과 겹치게 */
+    padding: 60px 0;
+}
+
+.empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.empty-content .empty-icon {
+    width: 62px;
+    height: 62px;
+    border: 2px solid var(--primary-text-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.empty-content .empty-icon i {
+    width: 32px;
+    height: 32px;
+}
+
+.empty-content h2 {
+    font-size: 1.75rem;
+    font-weight: 300;
+    margin: 0 0 16px;
+}
+
+.empty-content p {
+    margin: 0 0 24px;
+}
+
+.share-first-photo-btn {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+
+/* --- 반응형 --- */
+@media (max-width: 767px) {
+    .profile-main {
+        padding: 16px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-image {
+        margin-right: 0;
+        margin-bottom: 16px;
+    }
+
+    .profile-image .image-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .profile-info .info-row-1, .profile-info .stats-list {
+        justify-content: center;
+    }
+    
+    .profile-info .stats-list {
+        order: 1; /* flex item 순서 변경 */
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 0;
+        margin-bottom: 0;
+        width: 100vw; /* 화면 너비 꽉 채움 */
+    }
+
+    .profile-info .button-row {
+        order: 2;
+        width: 100%;
+        padding: 16px;
+    }
+    .edit-profile-btn, .view-archive-btn {
+        flex-grow: 1;
+    }
+}

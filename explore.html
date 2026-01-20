@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>탐색 • What's your vibe?</title>
+    <link rel="stylesheet" href="style.css"> <!-- 전체 공통 스타일 -->
+    <link rel="stylesheet" href="explore.css"> <!-- 탐색 페이지 전용 스타일 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 좌측 사이드바 -->
+        <aside class="left-sidebar">
+            <div class="logo">
+                <h1>What's your vibe?</h1>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="profile.html"><i data-lucide="user-circle"></i> <span>내 프로필</span></a></li>
+                    <li><a href="feed.html"><i data-lucide="home"></i> <span>피드</span></a></li>
+                    <li><a href="explore.html"><i data-lucide="compass"></i> <span>탐색</span></a></li>
+                    <li><a href="messages.html"><i data-lucide="message-circle"></i> <span>메시지</span></a></li>
+                    <li><a href="board.html"><i data-lucide="clipboard-list"></i> <span>자유 게시판</span></a></li>
+                    <li><a href="#" onclick="signOut()"><i data-lucide="log-out"></i> <span>로그아웃</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 탐색 메인 콘텐츠 -->
+        <main class="explore-main">
+            <div class="search-bar-area">
+                <div class="search-bar">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="검색">
+                    <button class="clear-btn" style="display:none;"><i data-lucide="x-circle"></i></button>
+                </div>
+            </div>
+
+            <div class="explore-grid">
+                <!-- 예시 아이템들. 실제로는 동적으로 생성됩니다. -->
+                <div class="grid-item">
+                    <img src="https://via.placeholder.com/300" alt="explore content">
+                    <div class="overlay">
+                        <div class="overlay-info">
+                            <span><i data-lucide="heart"></i> 1,234</span>
+                            <span><i data-lucide="message-circle"></i> 56</span>
+                        </div>
+                    </div>
+                    <i data-lucide="clapperboard" class="content-type-icon"></i>
+                </div>
+                <div class="grid-item large">
+                    <img src="https://via.placeholder.com/600" alt="explore content">
+                    <div class="overlay">
+                         <div class="overlay-info">
+                            <span><i data-lucide="heart"></i> 5,678</span>
+                            <span><i data-lucide="message-circle"></i> 123</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <img src="https://via.placeholder.com/300" alt="explore content">
+                    <div class="overlay">
+                        <div class="overlay-info">
+                            <span><i data-lucide="heart"></i> 2,345</span>
+                            <span><i data-lucide="message-circle"></i> 89</span>
+                        </div>
+                    </div>
+                     <i data-lucide="layers" class="content-type-icon"></i>
+                </div>
+                <!-- ... 추가 아이템들 -->
+                 <div class="grid-item">
+                    <img src="https://via.placeholder.com/300" alt="explore content">
+                    <div class="overlay"><div class="overlay-info"><span><i data-lucide="heart"></i> 1k</span><span><i data-lucide="message-circle"></i> 34</span></div></div>
+                </div>
+                 <div class="grid-item">
+                    <img src="https://via.placeholder.com/300" alt="explore content">
+                    <div class="overlay"><div class="overlay-info"><span><i data-lucide="heart"></i> 3.5k</span><span><i data-lucide="message-circle"></i> 99</span></div></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        // IMPORTANT: Replace with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+    </script>
+    <script src="auth.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

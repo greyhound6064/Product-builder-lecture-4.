@@ -1,0 +1,123 @@
+/* --- 게시판 페이지 전용 스타일 --- */
+
+/* --- 메인 레이아웃 --- */
+.board-main {
+    grid-column: 2 / 3;
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    box-sizing: border-box;
+}
+
+/* --- 게시판 헤더 --- */
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.board-header h1 {
+    font-size: 1.75rem;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 8px;
+}
+
+.search-container input {
+    border: none;
+    outline: none;
+    padding: 8px;
+    background: none;
+}
+
+.search-container .search-btn {
+    color: var(--secondary-text-color);
+}
+
+.write-post-btn {
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* --- 게시물 테이블 --- */
+.post-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+
+.post-table th, .post-table td {
+    padding: 12px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-table thead {
+    background-color: #FAFAFA;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-table .col-title {
+    width: 50%;
+}
+
+.post-table .post-title {
+    text-align: left;
+}
+
+.post-table .post-title a {
+    color: var(--primary-text-color);
+}
+
+.post-table .post-title a:hover {
+    text-decoration: underline;
+}
+
+.post-table .comment-count {
+    color: var(--secondary-text-color);
+    font-size: 0.9em;
+    margin-left: 4px;
+}
+
+/* --- 페이지네이션 --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination a {
+    color: var(--primary-text-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.pagination a.active, .pagination a:hover {
+    background-color: #EFEFEF;
+    font-weight: 600;
+}
+
+.pagination .page-arrow {
+    color: var(--secondary-text-color);
+}
