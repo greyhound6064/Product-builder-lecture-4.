@@ -61,8 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(postButton) {
         postButton.addEventListener('click', () => {
+            console.log("Post button clicked");
             const caption = postCaption.value;
+            console.log("Caption:", caption);
+            console.log("Download URL:", downloadURL);
+            console.log("Current user:", window.auth.currentUser);
+
             if (caption && downloadURL && window.auth.currentUser) {
+                console.log("All conditions met, creating post...");
                 const userId = window.auth.currentUser.uid;
                 const postsRef = window.collection(window.db, "posts");
 
@@ -83,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Error creating post:", error);
                 });
             } else {
-                console.log("Please enter a caption and select an image.");
+                console.log("Conditions not met for creating post.");
+                if (!caption) console.log("Reason: Caption is empty.");
+                if (!downloadURL) console.log("Reason: Download URL is empty.");
+                if (!window.auth.currentUser) console.log("Reason: User is not logged in.");
             }
         });
     }
