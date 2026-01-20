@@ -23,9 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if(fileInput) {
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            if (file) {
+            if (file && window.auth.currentUser) {
                 console.log("File selected:", file);
-                // Here you would handle the file upload process
+                const userId = window.auth.currentUser.uid;
+                const storageRef = window.ref(window.storage, `images/${userId}/${file.name}`);
+                
+                console.log("Uploading file...");
+                window.uploadBytes(storageRef, file).then((snapshot) => {
+                    console.log('Uploaded a blob or file!');
+                    window.getDownloadURL(snapshot.ref).then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                    });
+                });
             }
         });
     }
