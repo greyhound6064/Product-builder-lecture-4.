@@ -3,6 +3,33 @@ console.log("profile.js script loaded");
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
+    // Upload functionality
+    const uploadButton = document.querySelector('.share-first-photo-btn');
+    const uploadIcon = document.querySelector('.empty-icon');
+    const fileInput = document.getElementById('file-upload');
+
+    if(uploadButton) {
+        uploadButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+    }
+
+    if(uploadIcon) {
+        uploadIcon.addEventListener('click', () => {
+            fileInput.click();
+        });
+    }
+
+    if(fileInput) {
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                console.log("File selected:", file);
+                // Here you would handle the file upload process
+            }
+        });
+    }
+
     window.auth.onAuthStateChanged(user => {
         console.log("onAuthStateChanged event fired");
         if (user) {
