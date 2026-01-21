@@ -16,24 +16,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(uploadButton) {
         uploadButton.addEventListener('click', () => {
+            newPostForm.style.display = 'flex';
+            emptyContent.style.display = 'none';
             fileInput.click();
         });
     }
 
     if(uploadIcon) {
         uploadIcon.addEventListener('click', () => {
+            newPostForm.style.display = 'flex';
+            emptyContent.style.display = 'none';
             fileInput.click();
         });
     }
 
     if(fileInput) {
         fileInput.addEventListener('change', (event) => {
+            if (event.target.files.length === 0) {
+                // User cancelled file selection
+                newPostForm.style.display = 'none';
+                emptyContent.style.display = 'flex';
+                return;
+            }
             const file = event.target.files[0];
             if (file) {
-                // Show the new post form and hide the empty content message
-                newPostForm.style.display = 'flex';
-                emptyContent.style.display = 'none';
-
                 // Show a preview of the selected image
                 const reader = new FileReader();
                 reader.onload = (e) => {
