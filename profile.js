@@ -40,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const file = event.target.files[0];
             if (file) {
+                // Disable button and show loading state
+                postButton.disabled = true;
+                postButton.textContent = '업로드 중...';
+
                 // Show a preview of the selected image
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -58,6 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.getDownloadURL(snapshot.ref).then((url) => {
                             console.log('File available at', url);
                             downloadURL = url; // Save the download URL
+                            
+                            // Enable button and restore text
+                            postButton.disabled = false;
+                            postButton.textContent = '게시하기';
                         });
                     });
                 }
@@ -91,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     postCaption.value = '';
                     imagePreview.src = '#';
                     downloadURL = '';
+                    
+                    // Disable button for the next time
+                    postButton.disabled = true; 
+                    postButton.textContent = '게시하기';
                 }).catch((error) => {
                     console.error("Error creating post:", error);
                 });
